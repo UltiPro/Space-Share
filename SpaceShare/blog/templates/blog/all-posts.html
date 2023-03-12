@@ -1,0 +1,14 @@
+{% extend "base.html" %}
+{% load static %}
+
+{% block doc_css %}
+<link rel="stylesheet" href="{% static 'blog/blog.css' %}">
+{% endblock %}
+
+{% block doc_title %}
+All Posts
+{% endblock %}
+
+{% block doc_content %}
+Hello world!
+{% endblock %}
