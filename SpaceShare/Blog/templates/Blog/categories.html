@@ -1,0 +1,104 @@
+{% extends 'Blog/base_blog.html' %}
+{% load static %}
+
+{% block doc_title %}
+    Space Share - Categories
+{% endblock %}
+
+{% block doc_css %}
+    <link rel="stylesheet" href="{% static 'Blog/css/categories.css' %}">
+    <style>
+        .main-page-header {
+            background-image: url("{% static 'Blog/images/categories.jpg' %}");
+        }
+    </style>
+{% endblock %}
+
+{% block blog_content %}
+    <header class="main-page-header py-5 mb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="page-header-holder mt-5 text-white">
+                        <h1 class="fs-3">Categories</h1>
+                        <p>Find your favourite articles by category!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="post-loop py-3 mb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="list-group mb-3">
+                        <a href="" class="list-group-item list-group-item-action text-dark">
+                            <article class="row align-items-center">
+                                <div class="col-md-3">
+                                    <img src="" alt="" class="img-fluid rounded">
+                                </div>
+                                <div class="col-md-9">
+                                    <h3 class="fs-5 mt-2"></h3>
+                                    <p class="fw-light small"></p>
+                                    <p class="text-secondary">
+                                        <strong>Category: </strong>Some Category
+                                        <strong>Posted on: </strong>Some Date
+                                    </p>
+                                </div>
+                            </article>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-bg-primary mb-3">
+                        <div class="card-body">
+                            <h3 class="fs-4">Subscribe for newsletters</h3>
+                            <p>Subscribe the Space Share blog for space exploration and discovering new knowledge!</p>
+                            <form>
+                                <div class="row gx-2">
+                                    <div class="col-md-6">
+                                        <div class="mb-2">
+                                            <input type="text" class="form-control form-control-sm" placeholder="First Name" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-2">
+                                            <input type="text" class="form-control form-control-sm" placeholder="Last Name" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-2">
+                                            <input type="email" class="form-control form-control-sm" placeholder="Email" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-warning btn-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-plus-fill" viewBox="0 0 16 16">
+                                                    <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.026A2 2 0 0 0 2 14h6.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.606-3.446l-.367-.225L8 9.586l-1.239-.757ZM16 4.697v4.974A4.491 4.491 0 0 0 12.5 8a4.49 4.49 0 0 0-1.965.45l-.338-.207L16 4.697Z"/>
+                                                    <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 0 0 1 0v-1h1a.5.5 0 0 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
+                                                </svg>
+                                                Subscribe</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <ul class="list-group small mb-3">
+                        <li class="list-group-item active">Categories</li>
+                        <li class="list-group-item list-group-item-action">
+                            <a href="" class="text-decoration-none text-dark">cos</a>
+                        </li>
+                        <li class="list-group-item list-group-item-action">
+                            <a href="" class="text-decoration-none text-dark">cos</a>
+                        </li>
+                        <li class="list-group-item list-group-item-action">
+                            <a href="" class="text-decoration-none text-dark">cos</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

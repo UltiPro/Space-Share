@@ -26,6 +26,8 @@ class Author(models.Model):
 
 class Tag(models.Model):
     tag = models.CharField(max_length=20)
+    description = models.CharField(max_length=1000)
+    image = models.ImageField(upload_to="tags", null=False)
 
     def __str__(self):
         return self.tag
