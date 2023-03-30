@@ -25,6 +25,22 @@ class Posts(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['title'] = "All Posts"
+        context['tags'] = Tag.objects.all()
+        return context
+
+
+class PostsByTag(ListView):
+    template_name = "Blog/posts.html"
+    model = Post
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        return super().get_queryset().order_by("-date")
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['title'] = f"Posts with tag {{url_tag}}"
+        context['tags'] = Tag.objects.all()
         return context
 
 

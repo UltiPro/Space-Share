@@ -32,23 +32,23 @@
             <div class="row">
                 <div class="col-md-8">
                     {% for post in posts %}
-                    <div class="list-group mb-3">
-                        <a href="" class="list-group-item list-group-item-action text-dark">
-                            <article class="row align-items-center">
-                                <div class="col-md-3">
-                                    <img src="" alt="" class="img-fluid rounded">
-                                </div>
-                                <div class="col-md-9">
-                                    <h3 class="fs-5 mt-2"></h3>
-                                    <p class="fw-light small"></p>
-                                    <p class="text-secondary">
-                                        <strong>Category: </strong>Some Category
-                                        <strong>Posted on: </strong>Some Date
-                                    </p>
-                                </div>
-                            </article>
-                        </a>
-                    </div>
+                        <div class="list-group mb-3">
+                            <a href="{% url 'post_by_slug' post.slug %}" class="list-group-item list-group-item-action text-dark">
+                                <article class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <img src="{{ post.image.url }}" alt="Post image" class="img-fluid rounded">
+                                    </div>
+                                    <div class="col-md-9">
+                                        <h3 class="fs-5 mt-2">{{ post.title }}</h3>
+                                        <p class="fw-light small">{{ post.content|truncatechars:75 }}</p>
+                                        <p class="text-secondary">
+                                            <strong>Category: </strong>{% for tag in post.tags.all %}{{tag.tag}} {% endfor %}
+                                            <strong>Posted on: </strong>{{ post.date }}
+                                        </p>
+                                    </div>
+                                </article>
+                            </a>
+                        </div>
                     {% endfor %}
                 </div>
                 <div class="col-md-4">
@@ -88,18 +88,14 @@
                         </div>
                     </div>
                     <ul class="list-group small mb-3">
-                        <li class="list-group-item active">Categories</li>
-
-                        <li class="list-group-item list-group-item-action">
-                            <a href="" class="text-decoration-none text-dark">cos</a>
-                        </li>
-                        <li class="list-group-item list-group-item-action">
-                            <a href="" class="text-decoration-none text-dark">cos</a>
-                        </li>
-                        <li class="list-group-item list-group-item-action">
-                            <a href="" class="text-decoration-none text-dark">cos</a>
-                        </li>
-
+                        <li class="list-group-item active"><strong>Categories</strong></li>
+                        {% for tag in tags %}
+                        <a href="{% url 'posts_by_tag' tag.tag|slice":-1" %}" class="text-decoration-none text-dark">
+                            <li class="list-group-item list-group-item-action">
+                                {{ tag.tag }}
+                            </li>
+                        </a>
+                        {% endfor %}
                     </ul>
                 </div>
             </div>

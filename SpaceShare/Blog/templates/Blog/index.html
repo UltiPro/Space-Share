@@ -81,11 +81,11 @@
                 {% for post in posts %}
                 <div class="col-md-3">
                     <div class="card shadow-sm bm-3 h-100">
-                        <img src="{{ post.image.url }}" alt="Post image." class="card-img-top card-size">
+                        <img src="{{ post.image.url }}" alt="Post image" class="card-img-top card-size">
                         <div class="card-body">
                             <h3 class="fs-5">{{ post.title }}</h3>
                             <p class="small fw-light">{{ post.content|truncatechars:75 }}</p>
-                            <a href="{% url 'post_by_tag' post.slug %}" class="position-re bottom-0 btn btn-sm btn-warning rounded-pill shadow-sm">Read more...</a>
+                            <a href="{% url 'post_by_slug' post.slug %}" class="position-re bottom-0 btn btn-sm btn-warning rounded-pill shadow-sm">Read more...</a>
                         </div>
                     </div>
                 </div>
