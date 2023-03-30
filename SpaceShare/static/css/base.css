@@ -1,0 +1,32 @@
+:root {
+    --sky: #4cc9f0;
+    --far-space: #f72585;
+}
+
+.nav-link:hover {
+    color: darkgray !important;
+}
+
+.form-control:focus {
+    border-color: royalblue;
+    box-shadow: none;
+}
+
+.custom-nav {
+    --bs-bg-opacity: .9;
+    backdrop-filter: blur(8px);
+}
+
+.brand-gradient {
+    background: var(--light);
+    background: -webkit-linear-gradient(to top, var(--sky), var(--far-space));
+    background: linear-gradient(to top, var(--sky), var(--far-space));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.banner-holder {
+    background-size: cover;
+    background-position: bottom;
+}

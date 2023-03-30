@@ -53,7 +53,7 @@ class Post(models.Model):
     title = models.CharField(max_length=150)
     author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name="author")
-    date = models.DateField(auto_now=True)
+    date = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField(Tag)
     content = models.TextField(
         validators=[MinLengthValidator(30, MaxLengthValidator(10000))])
