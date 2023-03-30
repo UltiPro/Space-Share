@@ -90,11 +90,11 @@
                     <ul class="list-group small mb-3">
                         <li class="list-group-item active"><strong>Categories</strong></li>
                         {% for tag in tags %}
-                        <a href="{% url 'posts_by_tag' tag.tag|slice":-1" %}" class="text-decoration-none text-dark">
-                            <li class="list-group-item list-group-item-action">
-                                {{ tag.tag }}
-                            </li>
-                        </a>
+                            <a href="{% url 'posts_by_tag' tag.tag %}" class="text-decoration-none text-dark">
+                                <li class="list-group-item list-group-item-action">
+                                    {{ tag.tag }}
+                                </li>
+                            </a>
                         {% endfor %}
                     </ul>
                 </div>

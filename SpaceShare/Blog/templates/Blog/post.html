@@ -1,0 +1,84 @@
+{% extends 'Blog/base_blog.html' %}
+{% load static %}
+
+{% block doc_title %}
+    Space Share - Post by {{ post.author.name }} {{ post.author.surname }}
+{% endblock %}
+
+{% block doc_css %}
+    <style>
+        .banner-holder {
+            background-image: url("{% static 'Blog/images/post.jpg' %}");
+            background-position: center;
+        }
+    </style>
+{% endblock %}
+
+{% block blog_content %}
+    <header class="banner-holder py-5 mb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="banner-content text-center text-white my-5 py-5">
+                        <h1>{{ post.author.name }} {{ post.author.surname }}</h1>
+                        <p class="h5">{{ post.title }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="py-3 mb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="content-holder">
+                        <div class="post-content mb-3">
+                            <h1>{{ post.title }}</h1>
+                            <p>{{ post.content|linebreaks }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <img src="{{ post.image.url }}" alt="Author's image" class="img-fluid rounded border border-3 border-secondary">
+                    </div>
+                    <div class="card">
+                        <div class="card-header text-bg-primary">
+                            {{ post.author.name }} {{post.author.surname}}
+                        </div>
+                        <div class="card-body p-0">
+                            <img src="{{ post.author.image.url }}" alt="Author" class="w-100 h-100 rounded-bottom border border-secondary">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="comment-form my-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="fs-6">Post your thoughts</h3>
+                                <form action="">
+                                    <div class="row gx-2">
+                                        <div class="col-md-12">
+                                            <div class="mb-2">
+                                                <textarea rows="3" class="form-control form-control-sm" placeholder="Your comment..."></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    Submit comment
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

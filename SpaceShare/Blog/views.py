@@ -25,7 +25,7 @@ class Posts(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['title'] = "All Posts"
-        context['tags'] = Tag.objects.all()
+        context['tags'] = Tag.objects.all().order_by("tag")
         return context
 
 
@@ -35,18 +35,21 @@ class PostsByTag(ListView):
     context_object_name = "posts"
 
     def get_queryset(self):
-        return super().get_queryset().order_by("-date")
+        return super().get_queryset().filter(tags__tag=Tag.objects.get(tag=self.kwargs['str'])).order_by("-date")
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['title'] = f"Posts with tag {{url_tag}}"
-        context['tags'] = Tag.objects.all()
+        context['title'] = f"Posts with tag "+self.kwargs['str']
+        context['tags'] = Tag.objects.exclude(
+            tag=self.kwargs['str']).order_by("tag")
         return context
 
 
-class Categories(ListView):
-    pass
-
-
 class Post(DetailView):
+    template_name = "Blog/post.html"
+    model = Post
+    context_object_name = "post"
+
+
+class Categories(ListView):
     pass
