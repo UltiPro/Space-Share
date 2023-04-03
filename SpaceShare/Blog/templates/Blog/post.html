@@ -40,16 +40,18 @@
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <img src="{{ post.image.url }}" alt="Author's image" class="img-fluid rounded border border-3 border-secondary">
+                        <img src="{{ post.image.url }}" alt="Author's image" class="img-fluid rounded border border-2 border-secondary">
                     </div>
-                    <div class="card">
-                        <div class="card-header text-bg-primary">
-                            {{ post.author.name }} {{post.author.surname}}
+                    <a href="{% url 'author' post.author.slug %}">
+                        <div class="card">
+                            <div class="card-header text-bg-primary">
+                                {{ post.author.name }} {{post.author.surname}}
+                            </div>
+                            <div class="card-body p-0">
+                                <img src="{{ post.author.image.url }}" alt="Author" class="w-100 h-100 rounded-bottom">
+                            </div>
                         </div>
-                        <div class="card-body p-0">
-                            <img src="{{ post.author.image.url }}" alt="Author" class="w-100 h-100 rounded-bottom border border-secondary">
-                        </div>
-                    </div>
+                    </a>
                 </div>
             </div>
             <div class="row">

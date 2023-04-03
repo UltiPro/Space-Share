@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='author',
             name='description',
-            field=models.TextField(default='Author Info', validators=[django.core.validators.MinLengthValidator(30, django.core.validators.MaxLengthValidator(2000))]),
+            field=models.TextField(default='Author Info', validators=[
+                                   django.core.validators.MinLengthValidator(30, django.core.validators.MaxLengthValidator(2000))]),
         ),
     ]

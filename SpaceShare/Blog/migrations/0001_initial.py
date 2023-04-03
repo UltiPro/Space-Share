@@ -16,26 +16,31 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Author',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=30)),
                 ('surname', models.CharField(max_length=50)),
-                ('email', models.EmailField(max_length=254, validators=[django.core.validators.RegexValidator('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$', message='Incorrect expression of e-mail.')])),
+                ('email', models.EmailField(max_length=254, validators=[django.core.validators.RegexValidator(
+                    '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$', message='Incorrect expression of e-mail.')])),
                 ('image', models.ImageField(null=True, upload_to='authors')),
             ],
         ),
         migrations.CreateModel(
             name='Newsletter',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=30)),
                 ('surname', models.CharField(max_length=50)),
-                ('email', models.EmailField(max_length=254, validators=[django.core.validators.RegexValidator('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$', message='Incorrect expression of e-mail.')])),
+                ('email', models.EmailField(max_length=254, validators=[django.core.validators.RegexValidator(
+                    '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$', message='Incorrect expression of e-mail.')])),
             ],
         ),
         migrations.CreateModel(
             name='Tag',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('tag', models.CharField(max_length=20)),
                 ('description', models.CharField(max_length=1000)),
                 ('image', models.ImageField(upload_to='tags')),
@@ -44,35 +49,47 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='User',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('login', models.CharField(max_length=15, validators=[django.core.validators.RegexValidator('^[A-Za-z][A-Za-z0-9_-]{1,13}[A-Za-z0-9]$', message='Incorrect expression of login.')])),
-                ('password', models.CharField(max_length=30, validators=[django.core.validators.RegexValidator('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,30}$', message='Incorrect expression of password.')])),
-                ('nickname', models.CharField(max_length=15, validators=[django.core.validators.RegexValidator('^[a-zA-Z]\\w*$', message='Incorrect expression of nickname.')])),
-                ('email', models.EmailField(max_length=254, validators=[django.core.validators.RegexValidator('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$', message='Incorrect expression of e-mail.')])),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('login', models.CharField(max_length=15, validators=[django.core.validators.RegexValidator(
+                    '^[A-Za-z][A-Za-z0-9_-]{1,13}[A-Za-z0-9]$', message='Incorrect expression of login.')])),
+                ('password', models.CharField(max_length=30, validators=[django.core.validators.RegexValidator(
+                    '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,30}$', message='Incorrect expression of password.')])),
+                ('nickname', models.CharField(max_length=15, validators=[django.core.validators.RegexValidator(
+                    '^[a-zA-Z]\\w*$', message='Incorrect expression of nickname.')])),
+                ('email', models.EmailField(max_length=254, validators=[django.core.validators.RegexValidator(
+                    '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$', message='Incorrect expression of e-mail.')])),
                 ('image', models.ImageField(null=True, upload_to='users')),
             ],
         ),
         migrations.CreateModel(
             name='Post',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('slug', models.SlugField(blank=True, unique=True)),
                 ('title', models.CharField(max_length=150)),
                 ('date', models.DateField(auto_now=True)),
-                ('content', models.TextField(validators=[django.core.validators.MinLengthValidator(30, django.core.validators.MaxLengthValidator(10000))])),
+                ('content', models.TextField(validators=[django.core.validators.MinLengthValidator(
+                    30, django.core.validators.MaxLengthValidator(10000))])),
                 ('image', models.ImageField(null=True, upload_to='posts')),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='author', to='Blog.author')),
+                ('author', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, related_name='author', to='Blog.author')),
                 ('tags', models.ManyToManyField(to='Blog.tag')),
             ],
         ),
         migrations.CreateModel(
             name='Comment',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('date', models.DateField(auto_now=True)),
-                ('content', models.TextField(validators=[django.core.validators.MinLengthValidator(30, django.core.validators.MaxLengthValidator(2000))])),
-                ('post', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='post', to='Blog.post')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user', to='Blog.user')),
+                ('content', models.TextField(validators=[django.core.validators.MinLengthValidator(
+                    30, django.core.validators.MaxLengthValidator(2000))])),
+                ('post', models.OneToOneField(
+                    null=True, on_delete=django.db.models.deletion.CASCADE, related_name='post', to='Blog.post')),
+                ('user', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, related_name='user', to='Blog.user')),
             ],
         ),
     ]

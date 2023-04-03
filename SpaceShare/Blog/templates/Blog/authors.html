@@ -28,13 +28,13 @@
             </div>
         </div>
     </header>
-    <section class="post-loop py-3 mb-3">
+    <section class="author-loop py-3 mb-3">
         <div class="container">
             <div class="row">
                 {% for author in authors %}
                     <div class="col-12 col-lg-6 authors-card">
                         <div class="list-group mb-3">
-                            <a href="" class="list-group-item list-group-item-action text-dark">
+                            <a href="{% url 'author' author.slug %}" class="list-group-item list-group-item-action text-dark">
                                 <article class="row align-items-center">
                                     <div class="col-md-3">
                                         <img src="{{ author.image.url }}" alt="Author image" class="img-fluid rounded authors-img">

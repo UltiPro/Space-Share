@@ -1,0 +1,55 @@
+{% extends 'Blog/base_blog.html' %}
+{% load static %}
+
+{% block doc_title %}
+    Space Share - {{ author.name }} {{ author.surname }}
+{% endblock %}
+
+{% block doc_css %}
+    <style>
+        .banner-holder {
+            background-image: url("{% static 'Blog/images/author.jpg' %}");
+        }
+    </style>
+{% endblock %}
+
+{% block blog_content %}
+    <header class="banner-holder py-5 mb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="banner-content text-center text-white my-5 py-5">
+                        <h1>{{ author.name }} {{ author.surname }}</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="py-3 mb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <img src="{{ author.image.url }}" alt="Author" class="w-100 h-100 rounded-top">
+                        </div>
+                        <div class="card-footer p-2 small">
+                            <strong>E-mail: </strong>{{ author.email }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9 mt-3 mt-md-0 ">
+                    <div class="content-holder">
+                        <div class="post-content mb-3">
+                            <h2>{{ author.name }} {{ author.surname }}</h2>
+                            <p>{{ author.description|linebreaks }}</p>
+                            <a href="{% url 'author_posts' author.slug %}" class="btn btn-success">
+                                See all posts...
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

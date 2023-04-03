@@ -5,7 +5,7 @@ from .models import Newsletter, Author, Tag, User, Comment, Post
 
 class AuthorAdmin(admin.ModelAdmin):
     prepopulated_fields = {
-        "slug": ("name","surname")
+        "slug": ("name", "surname")
     }
 
 
