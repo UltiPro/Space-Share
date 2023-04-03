@@ -14,8 +14,11 @@ class Newsletter(models.Model):
 
 
 class Author(models.Model):
+    slug = models.SlugField(db_index=True, unique=True, null=True, blank=True)
     name = models.CharField(max_length=30)
     surname = models.CharField(max_length=50)
+    description = models.TextField(
+        validators=[MinLengthValidator(30, MaxLengthValidator(2000))], default="Author Info")
     email = models.EmailField(validators=[RegexValidator(
         "^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$", message="Incorrect expression of e-mail.")])
     image = models.ImageField(upload_to="authors", null=True)

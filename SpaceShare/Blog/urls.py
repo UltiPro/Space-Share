@@ -7,8 +7,7 @@ urlpatterns = [
     path("posts", views.Posts.as_view(), name="posts"),
     path("posts/<str:str>,", views.PostsByTag.as_view(), name="posts_by_tag"),
     path("post/<slug:slug>", views.Post.as_view(), name="post_by_slug"),
-
-    path("posts/<str:str>", views.Categories.as_view(), name="posts_by_find"),
-    path("categories", views.Categories.as_view(), name="categories"),
-    path("about", views.Categories.as_view(), name="about")
+    path("authors", views.Authors.as_view(), name="authors"),
+    path("author/<slug:slug>", views.Author.as_view(), name="author"),
+    path("about", views.About.as_view(), name="about")
 ]

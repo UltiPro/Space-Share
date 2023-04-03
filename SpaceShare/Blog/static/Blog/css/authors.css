@@ -1,0 +1,10 @@
+@media only screen and (min-width: 992px) {
+    .authors-card {
+        height: 175px;
+    }
+
+    .authors-img {
+        width: 110px;
+        height: 130px;
+    }
+}

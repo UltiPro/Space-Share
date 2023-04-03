@@ -4,7 +4,9 @@ from .models import Newsletter, Author, Tag, User, Comment, Post
 
 
 class AuthorAdmin(admin.ModelAdmin):
-    pass
+    prepopulated_fields = {
+        "slug": ("name","surname")
+    }
 
 
 class UserAdmin(admin.ModelAdmin):

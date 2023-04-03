@@ -1,0 +1,57 @@
+{% extends 'Blog/base_blog.html' %}
+{% load static %}
+
+{% block doc_title %}
+    Space Share - Authors
+{% endblock %}
+
+{% block doc_css %}
+    <link rel="stylesheet" href="{% static 'Blog/css/authors.css' %}">
+    <style>
+        .banner-holder {
+            background-image: url("{% static 'Blog/images/authors.jpg' %}");
+            background-position: center;
+        }
+    </style>
+{% endblock %}
+
+{% block blog_content %}
+    <header class="banner-holder py-5 mb-3">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="banner-content text-center text-white my-5 py-5">
+                        <h1>Authors</h1>
+                        <p>Get to know our authors and their work!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="post-loop py-3 mb-3">
+        <div class="container">
+            <div class="row">
+                {% for author in authors %}
+                    <div class="col-12 col-lg-6 authors-card">
+                        <div class="list-group mb-3">
+                            <a href="" class="list-group-item list-group-item-action text-dark">
+                                <article class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <img src="{{ author.image.url }}" alt="Author image" class="img-fluid rounded authors-img">
+                                    </div>
+                                    <div class="col-md-9">
+                                        <h3 class="fs-5 mt-2">{{ author.name }} {{ author.surname }}</h3>
+                                        <p class="fw-light small">{{ author.description|truncatechars:75 }}</p>
+                                        <p class="text-secondary">
+                                            <strong>E-mail: </strong>{{ author.email }}
+                                        </p>
+                                    </div>
+                                </article>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

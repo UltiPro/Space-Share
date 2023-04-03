@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import TemplateView
 
-from .models import Post, Tag
+from .models import Post, Tag, Author
 
 
 class Index(ListView):
@@ -51,5 +51,16 @@ class Post(DetailView):
     context_object_name = "post"
 
 
-class Categories(ListView):
+class Authors(ListView):
+    template_name = "Blog/authors.html"
+    model = Author
+    context_object_name = "authors"
+
+
+class Author(DetailView):
+    template_name = "Blog/author.html"
+    model = Author
+    context_object_name = "author"
+
+class About(TemplateView):
     pass
