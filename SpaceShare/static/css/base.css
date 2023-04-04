@@ -29,4 +29,5 @@
 .banner-holder {
     background-size: cover;
     background-position: bottom;
+    text-shadow: 1px 1px black;
 }

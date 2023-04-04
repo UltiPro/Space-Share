@@ -1,13 +1,12 @@
-from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import TemplateView
 
-from .models import Post, Tag, Author
+from .models import Post as PostModel, Tag, Author as AuthorModel
 
 
 class Index(ListView):
     template_name = "Blog/index.html"
-    model = Post
+    model = PostModel
     context_object_name = "posts"
 
     def get_queryset(self):
@@ -16,7 +15,7 @@ class Index(ListView):
 
 class Posts(ListView):
     template_name = "Blog/posts.html"
-    model = Post
+    model = PostModel
     context_object_name = "posts"
 
     def get_queryset(self):
@@ -29,38 +28,64 @@ class Posts(ListView):
         return context
 
 
-class PostsByTag(ListView):
-    template_name = "Blog/posts.html"
-    model = Post
-    context_object_name = "posts"
-
+class PostsByTag(Posts):
     def get_queryset(self):
-        return super().get_queryset().filter(tags__tag=Tag.objects.get(tag=self.kwargs['str'])).order_by("-date")
+        return super().get_queryset().filter(tags__tag=Tag.objects.get(tag=self.kwargs['str']))
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['title'] = f"Posts with tag "+self.kwargs['str']
-        context['tags'] = Tag.objects.exclude(
-            tag=self.kwargs['str']).order_by("tag")
+        context['active_tag'] = self.kwargs['str']
         return context
 
 
 class Post(DetailView):
     template_name = "Blog/post.html"
-    model = Post
+    model = PostModel
     context_object_name = "post"
 
 
 class Authors(ListView):
     template_name = "Blog/authors.html"
-    model = Author
+    model = AuthorModel
     context_object_name = "authors"
+
+    def get_queryset(self):
+        return super().get_queryset().order_by("surname", "name")
 
 
 class Author(DetailView):
     template_name = "Blog/author.html"
-    model = Author
+    model = AuthorModel
     context_object_name = "author"
 
+
+class AuthorPosts(ListView):
+    template_name = "Blog/author_posts.html"
+    model = PostModel
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        return super().get_queryset().filter(author=AuthorModel.objects.get(slug=self.kwargs['slug'])).order_by("-date")
+
+    def get_context_data(self, *args, **kwargs):
+        author = AuthorModel.objects.get(slug=self.kwargs['slug'])
+        context = super().get_context_data(*args, **kwargs)
+        context['author_slug'] = author.slug
+        context['author_name'] = author.name
+        context['author_surname'] = author.surname
+        context['tags'] = Tag.objects.all().order_by("tag")
+        return context
+
+
+class AuthorPostsByTag(AuthorPosts):
+    def get_queryset(self):
+        return super().get_queryset().filter(tags__tag=Tag.objects.get(tag=self.kwargs['str']))
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['active_tag'] = self.kwargs['str']
+        return context
+
+
 class About(TemplateView):
-    pass
+    template_name = "Blog/about.html"
