@@ -1,6 +1,7 @@
 @media only screen and (min-width: 992px) {
     .authors-card {
-        height: 175px;
+        width: 100%;
+        max-height: 200px;
     }
 
     .authors-img {

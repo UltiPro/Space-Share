@@ -32,22 +32,16 @@
         <div class="container">
             <div class="row">
                 {% for author in authors %}
-                    <div class="col-12 col-lg-6 authors-card">
-                        <div class="list-group mb-3">
-                            <a href="{% url 'author' author.slug %}" class="list-group-item list-group-item-action text-dark">
-                                <article class="row align-items-center">
-                                    <div class="col-md-3">
-                                        <img src="{{ author.image.url }}" alt="Author image" class="img-fluid rounded authors-img">
-                                    </div>
-                                    <div class="col-md-9">
-                                        <h3 class="fs-5 mt-2">{{ author.name }} {{ author.surname }}</h3>
-                                        <p class="fw-light small">{{ author.description|truncatechars:75 }}</p>
-                                        <p class="text-secondary">
-                                            <strong>E-mail: </strong>{{ author.email }}
-                                        </p>
-                                    </div>
-                                </article>
-                            </a>
+                    <div class="col-md-3 mb-4">
+                        <div class="card shadow-sm bm-3 h-100">
+                            <img src="{{ author.image.url }}" alt="Author image" class="card-img-top img-fluid">
+                            <div class="card-body">
+                                <h3 class="fs-5">{{ author.name }} {{ author.surname }}</h3>
+                                <p class="small fw-light">{{ author.description|truncatechars:75 }}</p>
+                            </div>
+                            <div class="card-footer bg-info">
+                                <a href="{% url 'author' author.slug %}" class="link-light">Read more...</a>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
