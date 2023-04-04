@@ -85,7 +85,7 @@
                         <div class="card-body">
                             <h3 class="fs-5">{{ post.title }}</h3>
                             <p class="small fw-light">{{ post.content|truncatechars:75 }}</p>
-                            <a href="{% url 'post_by_slug' post.slug %}" class="position-re bottom-0 btn btn-sm btn-warning rounded-pill shadow-sm">Read more...</a>
+                            <a href="{% url 'post' post.slug %}" class="position-re bottom-0 btn btn-sm btn-warning rounded-pill shadow-sm">Read more...</a>
                         </div>
                     </div>
                 </div>
