@@ -13,5 +13,7 @@ urlpatterns = [
          views.AuthorPosts.as_view(), name="author_posts"),
     path("author/<slug:slug>/posts/<str:str>",
          views.AuthorPostsByTag.as_view(), name="author_posts_by_tag"),
-    path("about-us", views.About.as_view(), name="about_us")
+    path("about-us", views.About.as_view(), name="about_us"),
+    path("register", views.Register.as_view(), name="register"),
+    path("login", views.Login.as_view(), name="login")
 ]

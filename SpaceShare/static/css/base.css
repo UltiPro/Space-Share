@@ -3,6 +3,11 @@
     --far-space: #f72585;
 }
 
+html,
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
 .nav-link:hover {
     color: darkgray !important;
 }
@@ -29,5 +34,9 @@
 .banner-holder {
     background-size: cover;
     background-position: bottom;
+    text-shadow: 1px 1px black;
+}
+
+.text-shadow {
     text-shadow: 1px 1px black;
 }

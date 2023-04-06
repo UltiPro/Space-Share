@@ -1,0 +1,16 @@
+.bg-login-register {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: -1;
+    min-width: 100vw;
+    min-height: 100vh;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    -webkit-filter: blur(3px);
+    -moz-filter: blur(3px);
+    -o-filter: blur(3px);
+    -ms-filter: blur(3px);
+    filter: blur(3px);
+}
