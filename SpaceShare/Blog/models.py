@@ -29,21 +29,19 @@ class Author(models.Model):
 
 class Tag(models.Model):
     tag = models.CharField(max_length=20)
-    description = models.CharField(max_length=1000)
-    image = models.ImageField(upload_to="tags", null=False)
 
     def __str__(self):
         return self.tag
 
 
 class User(models.Model):
-    login = models.CharField(max_length=15, validators=[RegexValidator(
+    login = models.CharField(unique=True, max_length=15, validators=[RegexValidator(
         "^[A-Za-z][A-Za-z0-9_-]{1,13}[A-Za-z0-9]$", message="Incorrect expression of login.")])
     password = models.CharField(max_length=30, validators=[RegexValidator(
         "^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,30}$", message="Incorrect expression of password.")])
-    nickname = models.CharField(max_length=15, validators=[RegexValidator(
+    nickname = models.CharField(unique=True, max_length=15, validators=[RegexValidator(
         "^[a-zA-Z]\w*$", message="Incorrect expression of nickname.")])
-    email = models.EmailField(validators=[RegexValidator(
+    email = models.EmailField(unique=True, validators=[RegexValidator(
         "^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$", message="Incorrect expression of e-mail.")])
     image = models.ImageField(upload_to="users", null=True)
 
