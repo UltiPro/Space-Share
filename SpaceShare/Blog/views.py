@@ -1,7 +1,8 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView
 from django.views.generic.base import TemplateView
 
-from .models import Post as PostModel, Tag, Author as AuthorModel
+from .models import Post as PostModel, Tag as TagModel, Author as AuthorModel, User as UserModel
+from .forms import UserForm
 
 
 class Index(ListView):
@@ -24,13 +25,13 @@ class Posts(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['title'] = "All Posts"
-        context['tags'] = Tag.objects.all().order_by("tag")
+        context['tags'] = TagModel.objects.all().order_by("tag")
         return context
 
 
 class PostsByTag(Posts):
     def get_queryset(self):
-        return super().get_queryset().filter(tags__tag=Tag.objects.get(tag=self.kwargs['str']))
+        return super().get_queryset().filter(tags__tag=TagModel.objects.get(tag=self.kwargs['str']))
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -73,13 +74,13 @@ class AuthorPosts(ListView):
         context['author_slug'] = author.slug
         context['author_name'] = author.name
         context['author_surname'] = author.surname
-        context['tags'] = Tag.objects.all().order_by("tag")
+        context['tags'] = TagModel.objects.all().order_by("tag")
         return context
 
 
 class AuthorPostsByTag(AuthorPosts):
     def get_queryset(self):
-        return super().get_queryset().filter(tags__tag=Tag.objects.get(tag=self.kwargs['str']))
+        return super().get_queryset().filter(tags__tag=TagModel.objects.get(tag=self.kwargs['str']))
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -89,3 +90,14 @@ class AuthorPostsByTag(AuthorPosts):
 
 class About(TemplateView):
     template_name = "Blog/about.html"
+
+
+class Register(CreateView):
+    template_name = "Blog/register.html"
+    model = UserModel
+    form_class = UserForm
+    success_url = "/login"
+
+
+class Login(TemplateView):
+    template_name = "Blog/login.html"
