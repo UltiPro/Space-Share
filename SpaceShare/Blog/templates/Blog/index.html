@@ -98,3 +98,9 @@
         </div>
     </section>
 {% endblock %}
+
+{% block doc_js %}
+    {% if form.errors %}
+        <script src="{% static 'Blog/js/modal_show.js' %}"></script>
+    {% endif %}
+{% endblock %}
