@@ -2,7 +2,29 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.contrib.auth.hashers import make_password
 
-from .models import User
+from .models import Newsletter, User
+
+
+class NewsletterForm(forms.ModelForm):
+    field_order = ['name', 'surname', 'email']
+
+    class Meta:
+        model = Newsletter
+        fields = '__all__'
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'placeholder': 'First Name'
+            }),
+            'surname': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'placeholder': 'Last Name'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control form-control-sm',
+                'placeholder': 'E-mail'
+            })
+        }
 
 
 class UserForm(forms.ModelForm):
