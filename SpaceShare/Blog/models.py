@@ -6,7 +6,7 @@ from django.utils.text import slugify
 class Newsletter(models.Model):
     name = models.CharField(max_length=30)
     surname = models.CharField(max_length=50)
-    email = models.EmailField(validators=[RegexValidator(
+    email = models.EmailField(unique=True, validators=[RegexValidator(
         "^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$", message="Incorrect expression of e-mail.")])
 
     def __str__(self):
