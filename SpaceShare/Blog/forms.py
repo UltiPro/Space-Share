@@ -38,7 +38,7 @@ class NewsletterForm(forms.ModelForm):
             "You have subscribed to the newsletter. It is not you? Please contact SpaceShare administration.",
             "newsletter@spaceshare.com",
             [email],
-            fail_silently=False,
+            fail_silently=True,
             html_message=html_mail)
 
 
