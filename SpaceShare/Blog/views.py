@@ -17,6 +17,10 @@ class Index(FormView):
 
     def form_valid(self, form):
         form.save()
+        try:
+            form.send_email(form.cleaned_data['email'],form.cleaned_data['name'],form.cleaned_data['surname'])
+        except ConnectionRefusedError:
+            pass
         return super().form_valid(form)
 
 
@@ -34,6 +38,10 @@ class Posts(FormView):
 
     def form_valid(self, form):
         form.save()
+        try:
+            form.send_email(form.cleaned_data['email'],form.cleaned_data['name'],form.cleaned_data['surname'])
+        except ConnectionRefusedError:
+            pass
         return super().form_valid(form)
 
 
