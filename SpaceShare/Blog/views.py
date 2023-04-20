@@ -1,40 +1,47 @@
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.views.generic.base import TemplateView
 
 from .models import Post as PostModel, Tag as TagModel, Author as AuthorModel, User as UserModel
-from .forms import UserForm
+from .forms import NewsletterForm, UserForm
 
 
-class Index(ListView):
+class Index(FormView):
     template_name = "Blog/index.html"
-    model = PostModel
-    context_object_name = "posts"
+    form_class = NewsletterForm
+    success_url = "/newsletter"
 
-    def get_queryset(self):
-        return super().get_queryset().order_by("-date")[0:4]
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["posts"] = PostModel.objects.all().order_by("-date")[0:4]
+        return context
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
 
 
-class Posts(ListView):
+class Posts(FormView):
     template_name = "Blog/posts.html"
-    model = PostModel
-    context_object_name = "posts"
-
-    def get_queryset(self):
-        return super().get_queryset().order_by("-date")
+    form_class = NewsletterForm
+    success_url = "/newsletter"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['title'] = "All Posts"
+        context["posts"] = PostModel.objects.all().order_by("-date")
         context['tags'] = TagModel.objects.all().order_by("tag")
         return context
 
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
 
 class PostsByTag(Posts):
-    def get_queryset(self):
-        return super().get_queryset().filter(tags__tag=TagModel.objects.get(tag=self.kwargs['str']))
-
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        context["posts"] = PostModel.objects.all().order_by(
+            "-date").filter(tags__tag=TagModel.objects.get(tag=self.kwargs['str']))
         context['active_tag'] = self.kwargs['str']
         return context
 
@@ -89,6 +96,7 @@ class AuthorPostsByTag(AuthorPosts):
 
 
 class About(TemplateView):
+    # END THAT
     template_name = "Blog/about.html"
 
 
@@ -100,4 +108,10 @@ class Register(CreateView):
 
 
 class Login(TemplateView):
+    # END THAT
     template_name = "Blog/login.html"
+
+
+class Newsletter(TemplateView):
+    # END THAT
+    template_name = "Blog/newsletter.html"
