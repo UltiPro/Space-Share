@@ -1,6 +1,8 @@
 from django import forms
 from django.core.validators import RegexValidator
 from django.contrib.auth.hashers import make_password
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 from .models import Newsletter, User
 
@@ -25,6 +27,19 @@ class NewsletterForm(forms.ModelForm):
                 'placeholder': 'E-mail'
             })
         }
+
+    def send_email(self, email, name, surname):
+        html_mail = render_to_string('Blog/emails/newsletter.html', {
+            'name': name,
+            'surname': surname
+        })
+        send_mail(
+            "SpaceShare - subscribed to the newsletter!",
+            "You have subscribed to the newsletter. It is not you? Please contact SpaceShare administration.",
+            "newsletter@spaceshare.com",
+            [email],
+            fail_silently=False,
+            html_message=html_mail)
 
 
 class UserForm(forms.ModelForm):
