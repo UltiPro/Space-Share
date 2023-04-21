@@ -37,6 +37,10 @@ body {
     text-shadow: 1px 1px black;
 }
 
+.main-footer{
+    z-index: 10;
+}
+
 .text-shadow {
     text-shadow: 1px 1px black;
 }
@@ -44,5 +48,5 @@ body {
 .errorlist {
     color: #dc3545;
     font-weight: bold;
-    text-shadow: 0.5px 0.5px transparent;
+    text-shadow: 1px 1px transparent;
 }
