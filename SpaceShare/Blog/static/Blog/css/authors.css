@@ -1,11 +1,35 @@
+.card {
+    transition: transform 0.05s linear;
+}
+
+.card:hover {
+    transform: scale(1.025);
+}
+
+.card-header {
+    overflow: hidden;
+}
+
+@media only screen and (min-width: 768px) {
+    .card-header {
+        max-height: 155px;
+    }
+}
+
 @media only screen and (min-width: 992px) {
-    .authors-card {
-        width: 100%;
+    .card-header {
         max-height: 200px;
     }
+}
 
-    .authors-img {
-        width: 110px;
-        height: 130px;
+@media only screen and (min-width: 1200px) {
+    .card-header {
+        max-height: 250px;
+    }
+}
+
+@media only screen and (min-width: 1400px) {
+    .card-header {
+        max-height: 300px;
     }
 }
