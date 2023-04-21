@@ -15,11 +15,11 @@
 {% endblock %}
 
 {% block blog_content %}
-    <section class="banner-holder pt-5">
+    <section class="banner-holder py-5 mb-3">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <div class="banner-content text-center text-white my-5 py-5">
+                    <div class="banner-content text-center text-white my-5 py-4">
                         <h1 class="fw-bolder">Space Share</h1>
                         <p class="lead">Welcome to the Space Share blog, which is devoted to the subject of space exploration and discovering new knowledge!</p>
                         <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#subscribe-modal">
@@ -88,8 +88,8 @@
                         <img src="{{ post.image.url }}" alt="Post image" class="card-img-top card-size">
                         <div class="card-body">
                             <h3 class="fs-5">{{ post.title }}</h3>
-                            <p class="small fw-light">{{ post.content|truncatechars:75 }}</p>
-                            <a href="{% url 'post' post.slug %}" class="position-re bottom-0 btn btn-sm btn-warning rounded-pill shadow-sm">Read more...</a>
+                            <p class="small fw-light mb-5">{{ post.content|truncatechars:75 }}</p>
+                            <a href="{% url 'post' post.slug %}" class="position-absolute bottom-0 my-3 btn btn-sm btn-warning rounded-pill shadow-sm">Read more...</a>
                         </div>
                     </div>
                 </div>
