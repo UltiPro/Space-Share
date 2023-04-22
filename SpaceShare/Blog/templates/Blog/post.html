@@ -35,7 +35,7 @@
                     <div class="content-holder">
                         <div class="post-content mb-3">
                             <h1>{{ post.title }}</h1>
-                            <p>{{ post.content|linebreaks }}</p>
+                            <p>{{ post.content|safe|linebreaks }}</p>
                         </div>
                     </div>
                 </div>
