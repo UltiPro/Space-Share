@@ -41,7 +41,7 @@
                                         </div>
                                         <div class="col-md-9">
                                             <h3 class="fs-5 mt-2">{{ post.title }}</h3>
-                                            <p class="fw-light small">{{ post.content|truncatechars:75 }}</p>
+                                            <p class="fw-light small">{{ post.content|truncatechars:75|cut:'&emsp; '|cut:'&nbsp; '|cut:'&ensp; ' }}</p>
                                             <p class="text-secondary">
                                                 <strong>Category: </strong>{% for tag in post.tags.all %}{{tag.tag}} {% endfor %}
                                                 <strong>Posted on: </strong>{{ post.date }}
