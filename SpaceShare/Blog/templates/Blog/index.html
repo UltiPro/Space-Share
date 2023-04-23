@@ -88,7 +88,7 @@
                         <img src="{{ post.image.url }}" alt="Post image" class="card-img-top card-size">
                         <div class="card-body">
                             <h3 class="fs-5">{{ post.title }}</h3>
-                            <p class="small fw-light mb-5">{{ post.content|truncatechars:75 }}</p>
+                            <p class="small fw-light mb-5">{{ post.content|truncatechars:75|cut:'&emsp; '|cut:'&nbsp; '|cut:'&ensp; ' }}</p>
                             <a href="{% url 'post' post.slug %}" class="position-absolute bottom-0 my-3 btn btn-sm btn-warning rounded-pill shadow-sm">Read more...</a>
                         </div>
                     </div>
