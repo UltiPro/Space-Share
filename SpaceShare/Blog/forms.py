@@ -44,7 +44,7 @@ class NewsletterForm(forms.ModelForm):
 
 class UserForm(forms.ModelForm):
     c_password = forms.CharField(label="Confirm Password", validators=[RegexValidator(
-        "^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,30}$", message="Incorrect expression of confirm password.")], widget=forms.PasswordInput(attrs={
+        "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
             'class': 'form-control border border-secondary',
             'placeholder': 'Confirm Password'
         }))
