@@ -40,7 +40,7 @@
                             </div>
                             <div class="card-body">
                                 <h3 class="fs-5">{{ author.name }} {{ author.surname }}</h3>
-                                <p class="small fw-light">{{ author.description|truncatechars:75 }}</p>
+                                <p class="small fw-light">{{ author.description|truncatechars:75|cut:'&emsp; '|cut:'&nbsp; '|cut:'&ensp; ' }}</p>
                             </div>
                             <a href="{% url 'author' author.slug %}" class="link-light">
                                 <div class="card-footer bg-info">Read more...</div>
