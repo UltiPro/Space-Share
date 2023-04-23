@@ -34,18 +34,18 @@
                             <img src="{{ author.image.url }}" alt="Author" class="w-100 h-100 rounded-top">
                         </div>
                         <div class="card-footer p-2 small">
-                            <strong>E-mail: </strong>{{ author.email }}
+                            <span class="h6"><span class="fw-bold">E-mail:</span> {{ author.email }}</span>
                         </div>
                     </div>
+                    <a href="{% url 'author_posts' author.slug %}" class="btn btn-success mt-3 w-100">
+                        See all posts...
+                    </a>
                 </div>
                 <div class="col-md-9 mt-3 mt-md-0 ">
                     <div class="content-holder">
                         <div class="post-content mb-3">
                             <h2>{{ author.name }} {{ author.surname }}</h2>
-                            <p>{{ author.description|linebreaks }}</p>
-                            <a href="{% url 'author_posts' author.slug %}" class="btn btn-success">
-                                See all posts...
-                            </a>
+                            <p>{{ author.description|safe|linebreaks }}</p>
                         </div>
                     </div>
                 </div>
