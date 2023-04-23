@@ -18,7 +18,8 @@ class Index(FormView):
     def form_valid(self, form):
         form.save()
         try:
-            form.send_email(form.cleaned_data['email'],form.cleaned_data['name'],form.cleaned_data['surname'])
+            form.send_email(
+                form.cleaned_data['email'], form.cleaned_data['name'], form.cleaned_data['surname'])
         except ConnectionRefusedError:
             pass
         return super().form_valid(form)
@@ -31,7 +32,7 @@ class Posts(FormView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['title'] = "All Posts"
+        context['title'] = "Posts"
         context["posts"] = PostModel.objects.all().order_by("-date")
         context['tags'] = TagModel.objects.all().order_by("tag")
         return context
@@ -39,7 +40,8 @@ class Posts(FormView):
     def form_valid(self, form):
         form.save()
         try:
-            form.send_email(form.cleaned_data['email'],form.cleaned_data['name'],form.cleaned_data['surname'])
+            form.send_email(
+                form.cleaned_data['email'], form.cleaned_data['name'], form.cleaned_data['surname'])
         except ConnectionRefusedError:
             pass
         return super().form_valid(form)
@@ -48,10 +50,25 @@ class Posts(FormView):
 class PostsByTag(Posts):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        context['title'] = f"{self.kwargs['str']} Posts"
         context["posts"] = PostModel.objects.all().order_by(
             "-date").filter(tags__tag=TagModel.objects.get(tag=self.kwargs['str']))
         context['active_tag'] = self.kwargs['str']
         return context
+
+
+class PostsBySearch(ListView):
+    template_name = "Blog/posts_search.html"
+    model = PostModel
+    context_object_name = "posts"
+
+    def get_queryset(self):
+       return super().get_queryset().filter(title__icontains=self.request.GET['search']).order_by("-date")
+
+    def get_context_data(self, *args, **kwargs):
+       context = super().get_context_data(*args, **kwargs)
+       context['search'] = f"{self.request.GET['search']}"
+       return context
 
 
 class Post(DetailView):
