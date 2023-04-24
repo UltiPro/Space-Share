@@ -1,8 +1,8 @@
-.card{
+.card {
     transition: transform 0.05s linear;
 }
 
-.card:hover{
+.card:hover {
     transform: scale(1.05);
 }
 
