@@ -36,7 +36,7 @@ class Tag(models.Model):
 
 class User(models.Model):
     login = models.CharField(unique=True, max_length=15, validators=[RegexValidator(
-        "^(?=.*?[a-zA-Z\d])[a-zA-Z][a-zA-Z\d_-]{3,28}[a-zA-Z\d]$", message="Login must be between 4 and 30 characters long and must start with a letter and end with a letter or number. It can contain a floor and dash between the start and end.")])
+        "^(?=.*?[a-zA-Z\d])[a-zA-Z][a-zA-Z\d_-]{2,28}[a-zA-Z\d]$", message="Login must be between 4 and 30 characters long and must start with a letter and end with a letter or number. It can contain a floor and dash between the start and end.")])
     password = models.CharField(max_length=30, validators=[RegexValidator(
         "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")])
     nickname = models.CharField(unique=True, max_length=15, validators=[RegexValidator(
