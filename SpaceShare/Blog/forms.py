@@ -103,3 +103,11 @@ class UserLoginForm(forms.Form):
             'placeholder': 'Confirm Password'
         }))
     field_order = ['login', 'password']
+
+
+class CommentForm(forms.Form):
+    textarea = forms.CharField(widget=forms.Textarea(attrs={
+        'rows': '3',
+        'class': "form-control form-control-sm",
+        'placeholder': "Your comment..."
+    }))
