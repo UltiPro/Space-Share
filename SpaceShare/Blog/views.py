@@ -1,8 +1,10 @@
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.views.generic.base import TemplateView
+from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.hashers import check_password
 
 from .models import Post as PostModel, Tag as TagModel, Author as AuthorModel, User as UserModel
-from .forms import NewsletterForm, UserForm
+from .forms import NewsletterForm, UserRegisterForm, UserLoginForm
 
 
 class Index(FormView):
@@ -51,27 +53,35 @@ class PostsByTag(Posts):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['title'] = f"{self.kwargs['str']} Posts"
+        tag = get_object_or_404(TagModel, tag=self.kwargs['str'])
         context["posts"] = PostModel.objects.all().order_by(
-            "-date").filter(tags__tag=TagModel.objects.get(tag=self.kwargs['str']))
+            "-date").filter(tags__tag=tag)
         context['active_tag'] = self.kwargs['str']
         return context
 
 
 class PostsBySearch(ListView):
+    # dokończ
     template_name = "Blog/posts_search.html"
     model = PostModel
     context_object_name = "posts"
 
     def get_queryset(self):
-       return super().get_queryset().filter(title__icontains=self.request.GET['search']).order_by("-date")
+        if (not self.request.GET['search']):
+            return super().get_queryset().filter(title__icontains="Space").order_by("-date")
+        return super().get_queryset().filter(title__icontains=self.request.GET['search']).order_by("-date")
 
     def get_context_data(self, *args, **kwargs):
-       context = super().get_context_data(*args, **kwargs)
-       context['search'] = f"{self.request.GET['search']}"
-       return context
+        context = super().get_context_data(*args, **kwargs)
+        if (not self.request.GET['search']):
+            context['search'] = "Space"
+        else:
+            context['search'] = f"{self.request.GET['search']}"
+        return context
 
 
 class Post(DetailView):
+    # dokończ
     template_name = "Blog/post.html"
     model = PostModel
     context_object_name = "post"
@@ -112,7 +122,8 @@ class AuthorPosts(ListView):
 
 class AuthorPostsByTag(AuthorPosts):
     def get_queryset(self):
-        return super().get_queryset().filter(tags__tag=TagModel.objects.get(tag=self.kwargs['str']))
+        tag = get_object_or_404(TagModel, tag=self.kwargs['str'])
+        return super().get_queryset().filter(tags__tag=tag)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -121,22 +132,34 @@ class AuthorPostsByTag(AuthorPosts):
 
 
 class About(TemplateView):
-    # END THAT
     template_name = "Blog/about.html"
+
+
+class Newsletter(TemplateView):
+    # dokończ
+    template_name = "Blog/newsletter.html"
 
 
 class Register(CreateView):
     template_name = "Blog/register.html"
     model = UserModel
-    form_class = UserForm
+    form_class = UserRegisterForm
     success_url = "/login"
 
 
-class Login(TemplateView):
-    # END THAT
+class Login(FormView):
     template_name = "Blog/login.html"
+    form_class = UserLoginForm
+    success_url = "/"
 
-
-class Newsletter(TemplateView):
-    # END THAT
-    template_name = "Blog/newsletter.html"
+    def post(self, request, *args, **kwargs):
+        form = UserLoginForm(request.POST)
+        try:
+            user = UserModel.objects.get(login=form["login"].value())
+        except UserModel.DoesNotExist:
+            user = None
+        if user != None and check_password(form["password"].value(), user.password):
+            print("jest")
+        else:
+            return render(request, self.template_name, {"form": form})
+        return super().post(request, *args, **kwargs)
