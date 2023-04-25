@@ -1,10 +1,11 @@
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404, render, redirect
+from django.urls import reverse
 from django.contrib.auth.hashers import check_password
 
-from .models import Post as PostModel, Tag as TagModel, Author as AuthorModel, User as UserModel
-from .forms import NewsletterForm, UserRegisterForm, UserLoginForm
+from .models import Post as PostModel, Comment as CommentModel, Tag as TagModel, Author as AuthorModel, User as UserModel
+from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm
 
 
 class Index(FormView):
@@ -80,11 +81,26 @@ class PostsBySearch(ListView):
         return context
 
 
-class Post(DetailView):
-    # dokończ
+class Post(FormView):
     template_name = "Blog/post.html"
-    model = PostModel
-    context_object_name = "post"
+    form_class = CommentForm
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        print(self.success_url)
+        context['post'] = PostModel.objects.get(slug=self.kwargs['slug'])
+        context['comments'] = CommentModel.objects.all().filter(
+            post=PostModel.objects.get(slug=self.kwargs['slug']))
+        return context
+
+    def form_valid(self, form):
+        post = PostModel.objects.get(slug=self.kwargs['slug'])
+        comment = CommentModel(post=post, user=UserModel.objects.get(nickname=self.request.session.get("nickname")), content=form.cleaned_data['textarea'])
+        comment.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("post", kwargs={"slug": self.kwargs['slug']})
 
 
 class Authors(ListView):
