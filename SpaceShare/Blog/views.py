@@ -159,7 +159,11 @@ class Login(FormView):
         except UserModel.DoesNotExist:
             user = None
         if user != None and check_password(form["password"].value(), user.password):
-            print("jest")
+            request.session["nickname"] = user.nickname
         else:
             return render(request, self.template_name, {"form": form})
         return super().post(request, *args, **kwargs)
+
+
+class Logout(TemplateView):
+    pass

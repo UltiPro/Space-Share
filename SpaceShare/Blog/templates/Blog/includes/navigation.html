@@ -34,9 +34,15 @@
                     </button>
                 </div>
             </form>
-            <a href="{% url 'login' %}" class="btn btn-success mt-2 mt-lg-0 ms-lg-2">
-                Login In
-            </a>
+            {% if request.session.nickname %}
+                <a href="{% url 'logout' %}" class="btn btn-danger mt-2 mt-lg-0 ms-lg-2">
+                    Log out
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-success mt-2 mt-lg-0 ms-lg-2">
+                    Login In
+                </a>
+            {% endif %}
         </div>
     </div>
 </nav>
