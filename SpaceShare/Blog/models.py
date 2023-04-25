@@ -74,6 +74,6 @@ class Comment(models.Model):
         Post, on_delete=models.CASCADE, related_name="post", null=True)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="user")
-    date = models.DateField(auto_now=True)
+    date = models.DateTimeField(auto_now=True)
     content = models.TextField(
-        validators=[MinLengthValidator(30, MaxLengthValidator(2000))])
+        validators=[MinLengthValidator(2),MaxLengthValidator(2000)])
