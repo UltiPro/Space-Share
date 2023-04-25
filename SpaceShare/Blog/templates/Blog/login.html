@@ -5,6 +5,50 @@
     Space Share - Login
 {% endblock %}
 
+{% block doc_css %}
+    <link rel="stylesheet" href="{% static 'Blog/css/login_register.css' %}">
+    <style>
+        .bg-login-register {
+            background-image: url("{% static 'Blog/images/login_register.jpg' %}");
+        }
+    </style>
+{% endblock %}
+
 {% block blog_content %}
-    
+    <div class="bg-login-register"></div>
+    <div class="container py-5 my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg mt-5">
+                    <div class="card-header text-bg-primary h1">
+                        Login
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'login' %}" method="POST">
+                            {% csrf_token %}
+                            {% for form_item in form %}
+                                <div class="form-floating mb-3 shadow">
+                                    {{ form_item }}
+                                    {{ form_item.label_tag }}
+                                </div>
+                                <span class="list-unstyled color-danger">
+                                    {{ form_item.errors }}
+                                </span>
+                            {% endfor %}
+                            <button class="btn btn-lg btn-success w-100 shadow" type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
+                                    <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                                </svg>
+                                Login
+                            </button>
+                            <div class="mt-3 text-center">
+                                <a href="{% url 'register' %}" class="link-primary text-decoration-none">Don't have an account?</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
