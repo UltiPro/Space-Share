@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, CreateView, FormView, View
+from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.hashers import check_password
@@ -154,14 +154,20 @@ class Login(FormView):
 
     def post(self, request, *args, **kwargs):
         form = UserLoginForm(request.POST)
-        try:
-            user = UserModel.objects.get(login=form["login"].value())
-        except UserModel.DoesNotExist:
-            user = None
-        if user != None and check_password(form["password"].value(), user.password):
-            request.session["nickname"] = user.nickname
+        if form.is_valid():
+            try:
+                user = UserModel.objects.get(login=form["login"].value())
+            except UserModel.DoesNotExist:
+                user = None
+            if user != None:
+                if check_password(form["password"].value(), user.password):
+                    request.session["nickname"] = user.nickname
+                else:
+                    return render(request, self.template_name, {"form": form, "error": True})
+            else:
+                return render(request, self.template_name, {"form": form, "error": True})
         else:
-            return render(request, self.template_name, {"form": form})
+            return render(request, self.template_name, {"form": form, "error": False})
         return super().post(request, *args, **kwargs)
 
 
@@ -169,7 +175,6 @@ def Logout(request):
     if request.method == "POST" or request.method == "GET":
         request.session.flush()
     return redirect("/")
-
 
 
 class Settings(TemplateView):
