@@ -42,7 +42,7 @@ class NewsletterForm(forms.ModelForm):
             html_message=html_mail)
 
 
-class UserForm(forms.ModelForm):
+class UserRegisterForm(forms.ModelForm):
     c_password = forms.CharField(label="Confirm Password", validators=[RegexValidator(
         "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
             'class': 'form-control border border-secondary',
@@ -51,7 +51,7 @@ class UserForm(forms.ModelForm):
     field_order = ['login', 'password', 'c_password', 'nickname', 'email']
 
     def clean(self):
-        cleaned_data = super(UserForm, self).clean()
+        cleaned_data = super(UserRegisterForm, self).clean()
         password = cleaned_data.get("password")
         c_password = cleaned_data.get("c_password")
         if password != c_password:
@@ -89,3 +89,17 @@ class UserForm(forms.ModelForm):
                 'placeholder': 'E-mail'
             })
         }
+
+
+class UserLoginForm(forms.Form):
+    login = forms.CharField(label="Login", validators=[RegexValidator(
+        "^(?=.*?[a-zA-Z\d])[a-zA-Z][a-zA-Z\d_-]{2,28}[a-zA-Z\d]$", message="Login must be between 4 and 30 characters long and must start with a letter and end with a letter or number. It can contain a floor and dash between the start and end.")], widget=forms.TextInput(attrs={
+            'class': 'form-control border border-secondary',
+            'placeholder': 'Login'
+        }))
+    password = forms.CharField(label="Password", validators=[RegexValidator(
+        "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
+            'class': 'form-control border border-secondary',
+            'placeholder': 'Confirm Password'
+        }))
+    field_order = ['login', 'password']
