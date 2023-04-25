@@ -60,23 +60,42 @@
                     <div class="comment-form my-3">
                         <div class="card">
                             <div class="card-body">
-                                <h3 class="fs-6">Post your thoughts</h3>
-                                <form action="">
-                                    <div class="row gx-2">
-                                        <div class="col-md-12">
-                                            <div class="mb-2">
-                                                <textarea rows="3" class="form-control form-control-sm" placeholder="Your comment..."></textarea>
-                                            </div>
+                                <h3 class="fs-6 mb-3 fw-bolder">Comments</h3>
+                                {% for comment in comments%}
+                                    <div class="card w-100">
+                                        <div class="card-body text-secondary fw-bold">
+                                            {{ comment.content }}
                                         </div>
-                                        <div class="col-md-12">
-                                            <div class="d-grid">
-                                                <button type="submit" class="btn btn-sm btn-success">
-                                                    Submit comment
-                                                </button>
+                                        <div class="card-footer bg-secondary text-bg-secondary">
+                                            <div class="row">
+                                                <div class="col-6">{{ comment.user.nickname }}</div>
+                                                <div class="col-6 text-end">{{ comment.date }}</div>
                                             </div>
                                         </div>
                                     </div>
-                                </form>
+                                {% endfor %}
+                                {% if request.session.nickname %}
+                                    <h3 class="fs-6 mt-4 fw-bolder">Post your thoughts</h3>
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <div class="row gx-2">
+                                            <div class="col-md-12">
+                                                <div class="mb-2">
+                                                    {{ form.textarea }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="d-grid">
+                                                    <button type="submit" class="btn btn-sm btn-success">
+                                                        Submit comment
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                {% else %}
+                                    <a href="{% url 'login' %}" class="btn btn-primary w-100">Login to post comments</a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
