@@ -5,7 +5,7 @@
 #modal-image-id {
     display: none;
     overflow: hidden;
-    z-index: 11;
+    z-index: 12;
     cursor: pointer;
     background-color: rgb(0, 0, 0);
     background-color: rgba(0, 0, 0, 0.9);
