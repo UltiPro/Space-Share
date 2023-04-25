@@ -1,6 +1,6 @@
-from django.views.generic import ListView, DetailView, CreateView, FormView
+from django.views.generic import ListView, DetailView, CreateView, FormView, View
 from django.views.generic.base import TemplateView
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.hashers import check_password
 
 from .models import Post as PostModel, Tag as TagModel, Author as AuthorModel, User as UserModel
@@ -165,5 +165,12 @@ class Login(FormView):
         return super().post(request, *args, **kwargs)
 
 
-class Logout(TemplateView):
+def Logout(request):
+    if request.method == "POST" or request.method == "GET":
+        request.session.flush()
+    return redirect("/")
+
+
+
+class Settings(TemplateView):
     pass

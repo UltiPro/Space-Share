@@ -18,5 +18,6 @@ urlpatterns = [
     path("newsletter", views.Newsletter.as_view(), name="newsletter"),
     path("register", views.Register.as_view(), name="register"),
     path("login", views.Login.as_view(), name="login"),
-    path("login", views.Logout.as_view(), name="logout"),
+    path("logout", views.Logout, name="logout"),
+    path("settings", views.Settings.as_view(), name="settings")
 ]
