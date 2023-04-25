@@ -70,10 +70,10 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    post = models.OneToOneField(
-        Post, on_delete=models.CASCADE, related_name="post", null=True)
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="post")
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="user")
     date = models.DateTimeField(auto_now=True)
     content = models.TextField(
-        validators=[MinLengthValidator(2),MaxLengthValidator(2000)])
+        validators=[MinLengthValidator(2), MaxLengthValidator(2000)])
