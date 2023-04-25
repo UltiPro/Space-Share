@@ -62,9 +62,9 @@
                             <div class="card-body">
                                 <h3 class="fs-6 mb-3 fw-bolder">Comments</h3>
                                 {% for comment in comments%}
-                                    <div class="card w-100">
+                                    <div class="card w-100 mb-3">
                                         <div class="card-body text-secondary fw-bold">
-                                            {{ comment.content }}
+                                            {{ comment.content|linebreaks }}
                                         </div>
                                         <div class="card-footer bg-secondary text-bg-secondary">
                                             <div class="row">
