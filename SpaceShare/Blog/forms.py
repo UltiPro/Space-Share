@@ -1,17 +1,18 @@
+from typing import Any
 from django import forms
 from django.core.validators import RegexValidator
 from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
-from .models import Newsletter, User
+from .models import Newsletter as NewsletterModel, User as UserModel, Post as PostModel, Comment as CommentModel
 
 
 class NewsletterForm(forms.ModelForm):
     field_order = ['name', 'surname', 'email']
 
     class Meta:
-        model = Newsletter
+        model = NewsletterModel
         fields = '__all__'
         widgets = {
             'name': forms.TextInput(attrs={
@@ -50,26 +51,8 @@ class UserRegisterForm(forms.ModelForm):
         }))
     field_order = ['login', 'password', 'c_password', 'nickname', 'email']
 
-    def clean(self):
-        cleaned_data = super(UserRegisterForm, self).clean()
-        password = cleaned_data.get("password")
-        c_password = cleaned_data.get("c_password")
-        if password != c_password:
-            raise forms.ValidationError({
-                'password': 'Passwords do not match!',
-                'c_password': 'Passwords do not match!'
-            })
-        return cleaned_data
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.password = make_password(user.password)
-        if commit:
-            user.save()
-        return user
-
     class Meta:
-        model = User
+        model = UserModel
         exclude = ['image']
         widgets = {
             'login': forms.TextInput(attrs={
@@ -90,6 +73,24 @@ class UserRegisterForm(forms.ModelForm):
             })
         }
 
+    def clean(self):
+        cleaned_data = super(UserRegisterForm, self).clean()
+        password = cleaned_data.get("password")
+        c_password = cleaned_data.get("c_password")
+        if password != c_password:
+            raise forms.ValidationError({
+                'password': 'Passwords do not match!',
+                'c_password': 'Passwords do not match!'
+            })
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.password = make_password(user.password)
+        if commit:
+            user.save()
+        return user
+
 
 class UserLoginForm(forms.Form):
     login = forms.CharField(label="Login", validators=[RegexValidator(
@@ -105,9 +106,82 @@ class UserLoginForm(forms.Form):
     field_order = ['login', 'password']
 
 
-class CommentForm(forms.Form):
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = CommentModel
+        fields = ["content"]
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'rows': '3',
+                'class': "form-control form-control-sm",
+                'placeholder': "Your comment..."
+            })
+        }
+        error_messages = {
+            'content': {
+                'min_length': ("Comment should be minimum 2 characters long."),
+                'max_length': ("Comment should be maximum 2000 characters long.")
+            }
+        }
+
+    def save(self, user, post, commit=True):
+        comment = super().save(commit=False)
+        comment.user = UserModel.objects.get(nickname=user)
+        comment.post = PostModel.objects.get(slug=post)
+        if commit:
+            comment.save()
+        return comment
+
+
+class ChangeEmailForm(forms.ModelForm):
+    new_email = forms.EmailField(label="New E-mail", validators=[RegexValidator(
+        "^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$", message="Incorrect expression of e-mail.")], widget=forms.EmailInput({
+            'class': 'form-control border border-secondary mb-2',
+            'placeholder': 'New E-mail'
+        }))
+    field_order = ['email', 'new_email']
+
+    class Meta:
+        model = UserModel
+        fields = ["email"]
+        widgets = {
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control border border-secondary mb-2',
+                'placeholder': 'Old E-mail'
+            })
+        }
+
+    def save(self, user):
+        form = super().save(commit=False)
+        user = UserModel.objects.get(nickname=user)
+        user.email = form.new_email
+        user.save()
+        return form
+
+
+class ChangePasswordForm(forms.Form):  # kurwa to
+    old_password = forms.CharField(label="Old password", validators=[RegexValidator(
+        "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
+            'class': 'form-control border border-secondary mb-2',
+            'placeholder': 'Old password'
+        }))
+    new_password = forms.CharField(label="New password", validators=[RegexValidator(
+        "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
+            'class': 'form-control border border-secondary',
+            'placeholder': 'New password'
+        }))
+    field_order = ['old_password', 'new_password']
+
+
+class ChangeImageForm(forms.ModelForm):  # kurwa to
+    class Meta:
+        model = UserModel
+        fields = ["image"]
+
+
+class ChangeDescriptionForm(forms.Form):  # kurwa to
     textarea = forms.CharField(widget=forms.Textarea(attrs={
-        'rows': '3',
+        'rows': '10',
         'class': "form-control form-control-sm",
-        'placeholder': "Your comment..."
+        'placeholder': "Your profile description..."
     }))
