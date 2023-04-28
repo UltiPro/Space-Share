@@ -1,3 +1,5 @@
+from typing import Any
+from django import http
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404, render, redirect
@@ -5,7 +7,7 @@ from django.urls import reverse
 from django.contrib.auth.hashers import check_password
 
 from .models import Post as PostModel, Comment as CommentModel, Tag as TagModel, Author as AuthorModel, User as UserModel
-from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm
+from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm, ChangeEmailForm, ChangePasswordForm, ChangeImageForm, ChangeDescriptionForm
 
 
 class Index(FormView):
@@ -94,9 +96,11 @@ class Post(FormView):
         return context
 
     def form_valid(self, form):
-        post = PostModel.objects.get(slug=self.kwargs['slug'])
-        comment = CommentModel(post=post, user=UserModel.objects.get(nickname=self.request.session.get("nickname")), content=form.cleaned_data['textarea'])
-        comment.save()
+        if not self.request.session.get("nickname"):
+            return redirect("/logout")
+        else:
+            form.save(self.request.session.get(
+                "nickname"), self.kwargs["slug"])
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -194,4 +198,16 @@ def Logout(request):
 
 
 class Settings(TemplateView):
+    template_name = "Blog/settings.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_changeemail"] = ChangeEmailForm()
+        context["form_changepassword"] = ChangePasswordForm()
+        context["form_changeimage"] = ChangeImageForm()
+        context["form_changedescription"] = ChangeDescriptionForm()
+        return context
+
+
+class User(TemplateView):
     pass
