@@ -133,33 +133,21 @@ class CommentForm(forms.ModelForm):
         return comment
 
 
-class ChangeEmailForm(forms.ModelForm):
+class ChangeEmailForm(forms.Form):
+    old_email = forms.EmailField(label="New E-mail", validators=[RegexValidator(
+        "^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$", message="Incorrect expression of e-mail.")], widget=forms.EmailInput({
+            'class': 'form-control border border-secondary mb-2',
+            'placeholder': 'New E-mail'
+        }))
     new_email = forms.EmailField(label="New E-mail", validators=[RegexValidator(
         "^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$", message="Incorrect expression of e-mail.")], widget=forms.EmailInput({
             'class': 'form-control border border-secondary mb-2',
             'placeholder': 'New E-mail'
         }))
-    field_order = ['email', 'new_email']
-
-    class Meta:
-        model = UserModel
-        fields = ["email"]
-        widgets = {
-            'email': forms.EmailInput(attrs={
-                'class': 'form-control border border-secondary mb-2',
-                'placeholder': 'Old E-mail'
-            })
-        }
-
-    def save(self, user):
-        form = super().save(commit=False)
-        user = UserModel.objects.get(nickname=user)
-        user.email = form.new_email
-        user.save()
-        return form
+    field_order = ['old_email', 'new_email']
 
 
-class ChangePasswordForm(forms.Form):  # kurwa to
+class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(label="Old password", validators=[RegexValidator(
         "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
             'class': 'form-control border border-secondary mb-2',
@@ -173,15 +161,23 @@ class ChangePasswordForm(forms.Form):  # kurwa to
     field_order = ['old_password', 'new_password']
 
 
-class ChangeImageForm(forms.ModelForm):  # kurwa to
-    class Meta:
-        model = UserModel
-        fields = ["image"]
+class ChangeImageForm(forms.Form):
+    image = forms.ImageField(widget=forms.FileInput(attrs={
+        'class': 'form-control form-control-lg',
+    }))
 
 
-class ChangeDescriptionForm(forms.Form):  # kurwa to
+class ChangeDescriptionForm(forms.Form):
     textarea = forms.CharField(widget=forms.Textarea(attrs={
-        'rows': '10',
+        'rows': '8',
         'class': "form-control form-control-sm",
         'placeholder': "Your profile description..."
     }))
+
+
+class DeleteAccountForm(forms.Form):
+    password = forms.CharField(label="Old password", validators=[RegexValidator(
+        "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
+            'class': 'form-control border border-secondary mb-2',
+            'placeholder': 'Your password'
+        }))
