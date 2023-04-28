@@ -10,7 +10,9 @@ class AuthorAdmin(admin.ModelAdmin):
 
 
 class UserAdmin(admin.ModelAdmin):
-    pass
+    prepopulated_fields = {
+        "slug": ("nickname",)
+    }
 
 
 class CommentAdmin(admin.ModelAdmin):
