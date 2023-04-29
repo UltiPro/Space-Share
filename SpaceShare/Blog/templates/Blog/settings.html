@@ -6,9 +6,9 @@
 {% endblock %}
 
 {% block blog_content %}
-    <div class="container-fluid position-fixed top-0 start-0 w-100 h-100 text-center">
-        <div class="row align-items-center justify-content-center h-100">
-            <div class="col-3">
+    <div class="container-fluid position-fixed top-0 start-0 text-center">
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-lg-3 mt-2">
                 <div class="card">
                     <div class="card-header bg-primary text-bg-primary">
                         Email
@@ -19,15 +19,23 @@
                             <div class="row gx-2">
                                 <div class="col-md-12">
                                     <div class="mb-2">
-                                        {% for form_item in form_changeemail %}
-                                            {{ form_item }}
-                                            {{ form_item.errors }}
-                                        {% endfor %}
+                                        {{ form_changeemail.old_email }}
+                                        {{ form_changeemail.old_email.errors }}
+                                        {% if form_changeemail_error_1 %}
+                                            <p class="text-danger">Old email is incorrect.</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mb-2">
+                                        {{ form_changeemail.new_email }}
+                                        {{ form_changeemail.new_email.errors }}
+                                        {% if form_changeemail_error_2 %}
+                                            <p class="text-danger">New email is currently occupied.</p>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="d-grid">
-                                        <button type="submit" class="btn btn-success">
+                                        <button type="submit" name="change_email" class="btn btn-success">
                                             Submit
                                         </button>
                                     </div>
@@ -37,7 +45,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-12 col-lg-3 mt-2">
                 <div class="card">
                     <div class="card-header bg-primary text-bg-primary">
                         Password
@@ -66,7 +74,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-12 col-lg-3 mt-2">
                 <div class="card">
                     <div class="card-header bg-primary text-bg-primary">
                         Image
@@ -86,6 +94,66 @@
                                 <div class="col-md-12">
                                     <div class="d-grid">
                                         <button type="submit" class="btn btn-success">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-lg-6 mt-2">
+                <div class="card">
+                    <div class="card-header bg-primary text-bg-primary">
+                        Description
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="row gx-2">
+                                <div class="col-md-12">
+                                    <div class="mb-2">
+                                        {% for form_item in form_changedescription %}
+                                            {{ form_item }}
+                                            {{ form_item.errors }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="d-grid">
+                                        <button type="submit" name="change_description" class="btn btn-success">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3 mt-2">
+                <div class="card">
+                    <div class="card-header bg-danger text-bg-danger">
+                        Delete Account
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="row gx-2">
+                                <div class="col-md-12">
+                                    <div class="mb-2">
+                                        {% for form_item in form_deleteaccount %}
+                                            {{ form_item }}
+                                            {{ form_item.errors }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="d-grid">
+                                        <button type="submit" name="change_description" class="btn btn-danger">
                                             Submit
                                         </button>
                                     </div>
