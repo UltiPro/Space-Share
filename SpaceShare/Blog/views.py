@@ -29,7 +29,7 @@ class Index(FormView):
             pass
         return super().form_valid(form)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs): # TUTAJ SKOŃCZ BO SYF
         if request.method == "POST":
             form = NewsletterForm(request.POST)
             if form.is_valid():
