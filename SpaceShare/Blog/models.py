@@ -38,6 +38,25 @@ class Tag(models.Model):
         return self.tag
 
 
+class Post(models.Model):
+    slug = models.SlugField(db_index=True, unique=True, null=False, blank=True)
+    title = models.CharField(max_length=150)
+    author = models.ForeignKey(
+        Author, on_delete=models.CASCADE, related_name="author")
+    date = models.DateTimeField(auto_now=True)
+    tags = models.ManyToManyField(Tag)
+    content = models.TextField(
+        validators=[MinLengthValidator(30), MaxLengthValidator(10000)])
+    image = models.ImageField(upload_to="posts", null=True)
+
+    def __str__(self):
+        return f'{self.title} by {self.author}'
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+
 class User(models.Model):
     slug = models.SlugField(db_index=True, unique=True, null=True, blank=True)
     login = models.CharField(unique=True, max_length=15, validators=[RegexValidator(
@@ -58,25 +77,6 @@ class User(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.nickname)
-        super().save(*args, **kwargs)
-
-
-class Post(models.Model):
-    slug = models.SlugField(db_index=True, unique=True, null=False, blank=True)
-    title = models.CharField(max_length=150)
-    author = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name="author")
-    date = models.DateTimeField(auto_now=True)
-    tags = models.ManyToManyField(Tag)
-    content = models.TextField(
-        validators=[MinLengthValidator(30), MaxLengthValidator(10000)])
-    image = models.ImageField(upload_to="posts", null=True)
-
-    def __str__(self):
-        return f'{self.title} by {self.author}'
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
 
