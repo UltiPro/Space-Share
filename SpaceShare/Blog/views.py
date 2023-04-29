@@ -1,5 +1,5 @@
 from typing import Any
-from django import http
+from django.http import HttpRequest, HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404, render, redirect
@@ -7,13 +7,13 @@ from django.urls import reverse
 from django.contrib.auth.hashers import check_password
 
 from .models import Post as PostModel, Comment as CommentModel, Tag as TagModel, Author as AuthorModel, User as UserModel
-from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm, ChangeEmailForm, ChangePasswordForm, ChangeImageForm, ChangeDescriptionForm
+from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm, ChangeEmailForm, ChangePasswordForm, ChangeImageForm, ChangeDescriptionForm, DeleteAccountForm
 
 
 class Index(FormView):
     template_name = "Blog/index.html"
     form_class = NewsletterForm
-    success_url = "/newsletter"
+    success_url = "/"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -28,6 +28,14 @@ class Index(FormView):
         except ConnectionRefusedError:
             pass
         return super().form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        if request.method == "POST":
+            form = NewsletterForm(request.POST)
+            if form.is_valid():
+                super().get_context_data()
+                return render(request, "Blog/newsletter.html")
+        return super().post(request, *args, **kwargs)
 
 
 class Posts(FormView):
@@ -63,14 +71,18 @@ class PostsByTag(Posts):
         return context
 
 
-class PostsBySearch(ListView):
-    # dokończ
+class PostsBySearch(ListView):  # dokończ
     template_name = "Blog/posts_search.html"
     model = PostModel
     context_object_name = "posts"
 
+    def get(self, request, *args, **kwargs):
+        if not kwargs.get("search"):
+            return redirect("/")
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
-        if (not self.request.GET['search']):
+        if not self.request.GET['search']:
             return super().get_queryset().filter(title__icontains="Space").order_by("-date")
         return super().get_queryset().filter(title__icontains=self.request.GET['search']).order_by("-date")
 
@@ -155,11 +167,6 @@ class About(TemplateView):
     template_name = "Blog/about.html"
 
 
-class Newsletter(TemplateView):
-    # dokończ
-    template_name = "Blog/newsletter.html"
-
-
 class Register(CreateView):
     template_name = "Blog/register.html"
     model = UserModel
@@ -197,7 +204,7 @@ def Logout(request):
     return redirect("/")
 
 
-class Settings(TemplateView):
+class Settings(TemplateView):  # dokończ
     template_name = "Blog/settings.html"
 
     def get_context_data(self, **kwargs):
@@ -206,8 +213,46 @@ class Settings(TemplateView):
         context["form_changepassword"] = ChangePasswordForm()
         context["form_changeimage"] = ChangeImageForm()
         context["form_changedescription"] = ChangeDescriptionForm()
+        context["form_deleteaccount"] = DeleteAccountForm()
         return context
 
+    def get(self, request, *args, **kwargs):
+        if not self.request.session.get("nickname"):
+            return render(request, "Blog/do_not_access.html")
+        return super().get(request, *args, **kwargs)
 
-class User(TemplateView):
-    pass
+    def post(self, request, *args, **kwargs):
+        if not self.request.session.get("nickname"):
+            return redirect("/logout")
+        if "change_email" in request.POST:
+            self.change_email(request)
+        else:
+            return self.render_settings(request)
+        return super().get(request, *args, **kwargs)
+
+    def change_email(self, request):
+        form = ChangeEmailForm(request.POST)
+        if form.is_valid():
+            user = UserModel.objects.get(
+                nickname=self.request.session.get("nickname"))
+            if form["old_email"].value() == user.email:
+                pass
+            else:
+                return self.render_settings(request, email=form, password_error=True)
+        else:
+            return self.render_settings(request, email=form)
+
+    def render_settings(self, request, email=ChangeEmailForm(), email_error=False, password=ChangePasswordForm(), password_error=False, image=ChangeImageForm(), description=ChangeDescriptionForm(), delete=DeleteAccountForm()):
+        return render(request, self.template_name, {
+            "form_changeemail": email,
+            "form_changeemail_error": email_error,
+            "form_changepassword": password,
+            "form_changepassword_error": password_error,
+            "form_changeimage": image,
+            "form_changedescription": description,
+            "form_deleteaccount": delete
+        })
+
+
+class User(TemplateView):  # dokończ
+    template_name = "Blog/newsletter.html"
