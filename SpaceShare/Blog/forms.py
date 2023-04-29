@@ -53,7 +53,7 @@ class UserRegisterForm(forms.ModelForm):
 
     class Meta:
         model = UserModel
-        exclude = ['image']
+        exclude = ['slug', 'image', 'description']
         widgets = {
             'login': forms.TextInput(attrs={
                 'class': 'form-control border border-secondary',
