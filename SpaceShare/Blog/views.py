@@ -29,11 +29,11 @@ class Index(FormView):
             pass
         return super().form_valid(form)
 
-    def post(self, request, *args, **kwargs): # TUTAJ SKOŃCZ BO SYF
+    def post(self, request, *args, **kwargs):
         if request.method == "POST":
             form = NewsletterForm(request.POST)
             if form.is_valid():
-                super().get_context_data()
+                self.form_valid(form)
                 return render(request, "Blog/newsletter.html")
         return super().post(request, *args, **kwargs)
 
@@ -58,6 +58,14 @@ class Posts(FormView):
         except ConnectionRefusedError:
             pass
         return super().form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        if request.method == "POST":
+            form = NewsletterForm(request.POST)
+            if form.is_valid():
+                self.form_valid(form)
+                return render(request, "Blog/newsletter.html")
+        return super().post(request, *args, **kwargs)
 
 
 class PostsByTag(Posts):
