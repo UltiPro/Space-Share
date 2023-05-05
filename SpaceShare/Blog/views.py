@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404, render, redirect
@@ -205,7 +204,7 @@ def Logout(request):
     return redirect("/")
 
 
-class Settings(TemplateView):  # dokończ
+class Settings(TemplateView):
     template_name = "Blog/settings.html"
 
     def get_context_data(self, **kwargs):
@@ -213,22 +212,26 @@ class Settings(TemplateView):  # dokończ
         context["form_changeemail"] = ChangeEmailForm()
         context["form_changepassword"] = ChangePasswordForm()
         context["form_changeimage"] = ChangeImageForm()
-        context["form_changedescription"] = ChangeDescriptionForm()
         context["form_deleteaccount"] = DeleteAccountForm()
+        context["form_changedescription"] = ChangeDescriptionForm()
         return context
 
     def get(self, request, *args, **kwargs):
         if not self.request.session.get("nickname"):
-            return render(request, "Blog/do_not_access.html")
+            return redirect("/logout")
         return super().get(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        if not self.request.session.get("nickname"):
-            return redirect("/logout")
+    def post(self, request, *args, **kwargs):  # dokończ w dół
         if "change_email" in request.POST:
             self.change_email(request)
-        else:
-            return self.render_settings(request)
+        elif "change_password" in request.POST:
+            self.change_password(request)
+        elif "change_image" in request.POST:
+            self.change_image(request)
+        elif "delete_account" in request.POST:
+            self.delete_account(request)
+        elif "change_description" in request.POST:
+            self.change_description(request)
         return super().get(request, *args, **kwargs)
 
     def change_email(self, request):
@@ -243,6 +246,18 @@ class Settings(TemplateView):  # dokończ
         else:
             return self.render_settings(request, email=form)
 
+    def change_password(self, request):
+        pass
+
+    def change_image(self, request):
+        pass
+
+    def delete_account(self, request):
+        pass
+
+    def change_description(self, request):
+        pass
+
     def render_settings(self, request, email=ChangeEmailForm(), email_error=False, password=ChangePasswordForm(), password_error=False, image=ChangeImageForm(), description=ChangeDescriptionForm(), delete=DeleteAccountForm()):
         return render(request, self.template_name, {
             "form_changeemail": email,
@@ -256,4 +271,4 @@ class Settings(TemplateView):  # dokończ
 
 
 class User(TemplateView):  # dokończ
-    template_name = "Blog/newsletter.html"
+    template_name = "Blog/user.html"
