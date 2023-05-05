@@ -1,5 +1,4 @@
-from typing import Any
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404, render, redirect
@@ -7,7 +6,7 @@ from django.urls import reverse
 from django.contrib.auth.hashers import check_password
 
 from .models import Post as PostModel, Comment as CommentModel, Tag as TagModel, Author as AuthorModel, User as UserModel
-from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm, ChangeEmailForm, ChangePasswordForm, ChangeImageForm, ChangeDescriptionForm, DeleteAccountForm
+from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm, ChangeEmailForm, ChangePasswordForm, ChangeImageForm, DeleteAccountForm, ChangeDescriptionForm
 
 
 class Index(FormView):
@@ -84,11 +83,6 @@ class PostsBySearch(ListView):  # dokończ
     model = PostModel
     context_object_name = "posts"
 
-    def get(self, request, *args, **kwargs):
-        if not kwargs.get("search"):
-            return redirect("/")
-        return super().get(request, *args, **kwargs)
-
     def get_queryset(self):
         if not self.request.GET['search']:
             return super().get_queryset().filter(title__icontains="Space").order_by("-date")
@@ -109,10 +103,9 @@ class Post(FormView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        print(self.success_url)
         context['post'] = PostModel.objects.get(slug=self.kwargs['slug'])
         context['comments'] = CommentModel.objects.all().filter(
-            post=PostModel.objects.get(slug=self.kwargs['slug']))
+            post=PostModel.objects.get(slug=self.kwargs['slug'])).order_by("-date")
         return context
 
     def form_valid(self, form):
@@ -124,7 +117,7 @@ class Post(FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("post", kwargs={"slug": self.kwargs['slug']})
+        return reverse("post", kwargs={"slug": self.kwargs['slug']}) + "#comments"
 
 
 class Authors(ListView):
