@@ -54,6 +54,16 @@
                             </div>
                         </div>
                     </a>
+                    <ul class="list-group mt-3">
+                        <li class="list-group-item active text-center"><strong>Categories</strong></li>
+                        {% for tag in post.tags.all %}
+                            <a href="{% url 'posts_by_tag' tag.tag %}" class="text-decoration-none text-dark">
+                                <li class="list-group-item list-group-item-action">
+                                    {{ tag.tag }}
+                                </li>
+                            </a>
+                        {% endfor %}
+                      </ul>
                 </div>
             </div>
             <div class="row" id="scroll-auto-target">
@@ -117,4 +127,5 @@
 
 {% block doc_js %}
     <script src="{% static 'Blog/js/modal_image.js' %}"></script>
+    <script src="{% static 'Blog/js/post.js' %}"></script>
 {% endblock %}
