@@ -72,25 +72,25 @@
                             <form action="{% url 'posts' %}" method="POST">
                                 {% csrf_token %}
                                 <div class="row gx-2">
-                                    <div class="col-md-6">
+                                    <div class="col-12 col-lg-6">
                                         <div class="mb-2">
                                             {{ form.name }}
                                         </div>
                                         {{ form.name.errors }}
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-12 col-lg-6">
                                         <div class="mb-2">
                                             {{ form.surname }}
                                         </div>
                                         {{ form.surname.errors }}
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-12 col-md-12">
                                         <div class="mb-2">
                                             {{ form.email }}
                                         </div>
                                         {{ form.email.errors }}
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-12 col-md-12">
                                         <div class="d-grid">
                                             <button type="submit" class="btn btn-success btn-sm">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-plus-fill" viewBox="0 0 16 16">
