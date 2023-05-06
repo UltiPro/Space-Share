@@ -1,6 +1,6 @@
 from django import forms
 from django.core.validators import RegexValidator
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
@@ -132,38 +132,89 @@ class CommentForm(forms.ModelForm):
         return comment
 
 
-class ChangeEmailForm(forms.Form):
+class ChangeEmailForm(forms.ModelForm):
     old_email = forms.EmailField(label="New E-mail", validators=[RegexValidator(
         "^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$", message="Incorrect expression of e-mail.")], widget=forms.EmailInput({
             'class': 'form-control border border-secondary mb-2',
             'placeholder': 'Old E-mail'
         }))
-    new_email = forms.EmailField(label="New E-mail", validators=[RegexValidator(
-        "^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$", message="Incorrect expression of e-mail.")], widget=forms.EmailInput({
-            'class': 'form-control border border-secondary mb-2',
-            'placeholder': 'New E-mail'
-        }))
-    field_order = ['old_email', 'new_email']
+    field_order = ['old_email', 'email']
+
+    class Meta:
+        model = UserModel
+        fields = ["email"]
+        widgets = {
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control border border-secondary mb-2',
+                'placeholder': 'New E-mail'
+            })
+        }
+
+    def clean(self):
+        cleaned_data = super(ChangeEmailForm, self).clean()
+        try:
+            is_email_occupied = UserModel.objects.get(
+                email=cleaned_data.get("email"))
+        except UserModel.DoesNotExist:
+            is_email_occupied = None
+        if cleaned_data.get("old_email") != self.instance.email:
+            raise forms.ValidationError({
+                'old_email': 'The current email address is invalid.'
+            })
+        if cleaned_data.get("old_email") == cleaned_data.get("email"):
+            raise forms.ValidationError({
+                'email': 'The old email cannot be new email.'
+            })
+        if is_email_occupied:
+            raise forms.ValidationError({
+                'email': 'The email you entered is already taken.'
+            })
+        return cleaned_data
 
 
-class ChangePasswordForm(forms.Form):
+class ChangePasswordForm(forms.ModelForm):
     old_password = forms.CharField(label="Old password", validators=[RegexValidator(
         "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
             'class': 'form-control border border-secondary mb-2',
             'placeholder': 'Old password'
         }))
-    new_password = forms.CharField(label="New password", validators=[RegexValidator(
-        "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
-            'class': 'form-control border border-secondary',
-            'placeholder': 'New password'
-        }))
-    field_order = ['old_password', 'new_password']
+    field_order = ['old_password', 'password']
+
+    class Meta:
+        model = UserModel
+        fields = ["password"]
+        widgets = {
+            'password': forms.PasswordInput(attrs={
+                'class': 'form-control border border-secondary mb-2',
+                'placeholder': 'New Password'
+            })
+        }
+
+    def clean(self):
+        cleaned_data = super(ChangePasswordForm, self).clean()
+        if not check_password(cleaned_data.get("old_password"), self.instance.password):
+            raise forms.ValidationError({
+                'old_password': 'Your current password is incorrect.'
+            })
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.password = make_password(user.password)
+        if commit:
+            user.save()
+        return user
 
 
-class ChangeImageForm(forms.Form):
-    image = forms.ImageField(widget=forms.FileInput(attrs={
-        'class': 'form-control form-control',
-    }))
+class ChangeImageForm(forms.ModelForm):
+    class Meta:
+        model = UserModel
+        fields = ["image"]
+        widgets = {
+            'image': forms.FileInput(attrs={
+                'class': "form-control"
+            })
+        }
 
 
 class DeleteAccountForm(forms.Form):
