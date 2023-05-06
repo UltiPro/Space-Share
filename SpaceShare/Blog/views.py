@@ -221,52 +221,74 @@ class Settings(TemplateView):
             return redirect("/logout")
         return super().get(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):  # dokończ w dół
+    def post(self, request, *args, **kwargs):
+        if not self.request.session.get("nickname"):
+            return redirect("/logout")
         if "change_email" in request.POST:
-            self.change_email(request)
+            return self.change_email(request)
         elif "change_password" in request.POST:
-            self.change_password(request)
+            return self.change_password(request)
         elif "change_image" in request.POST:
-            self.change_image(request)
+            return self.change_image(request)
         elif "delete_account" in request.POST:
-            self.delete_account(request)
+            return self.delete_account(request)
         elif "change_description" in request.POST:
-            self.change_description(request)
-        return super().get(request, *args, **kwargs)
+            return self.change_description(request)
 
     def change_email(self, request):
-        form = ChangeEmailForm(request.POST)
+        form = ChangeEmailForm(request.POST, instance=UserModel.objects.get(
+            nickname=self.request.session.get("nickname")))
         if form.is_valid():
-            user = UserModel.objects.get(
-                nickname=self.request.session.get("nickname"))
-            if form["old_email"].value() == user.email:
-                pass
-            else:
-                return self.render_settings(request, email=form, password_error=True)
+            form.save()
+            return self.render_settings(request, email=form, email_success=True)
         else:
             return self.render_settings(request, email=form)
 
     def change_password(self, request):
-        pass
+        form = ChangePasswordForm(request.POST, instance=UserModel.objects.get(
+            nickname=self.request.session.get("nickname")))
+        if form.is_valid():
+            form.save()
+            return self.render_settings(request, password=form, password_success=True)
+        else:
+            return self.render_settings(request, password=form)
 
-    def change_image(self, request):
-        pass
+    def change_image(self, request):  # dokończ w dół
+        form = ChangeImageForm(request.POST, request.FILES, instance=UserModel.objects.get(
+            nickname=self.request.session.get("nickname")))
+        if form.is_valid():
+            form.image = request.FILES['image']
+            form.save()
+            return self.render_settings(request, image=form)
+        else:
+            return self.render_settings(request, image=form)
 
     def delete_account(self, request):
-        pass
+        form = DeleteAccountForm(request.POST)
+        if form.is_valid():
+            user = UserModel.objects.get(
+                nickname=self.request.session.get("nickname"))
+            if check_password(form["password"].value(), user.password):
+                user.delete()
+                return redirect("/logout")
+            else:
+                return self.render_settings(request, delete=form, delete_error=True)
+        else:
+            return self.render_settings(request, delete=form)
 
     def change_description(self, request):
         pass
 
-    def render_settings(self, request, email=ChangeEmailForm(), email_error=False, password=ChangePasswordForm(), password_error=False, image=ChangeImageForm(), description=ChangeDescriptionForm(), delete=DeleteAccountForm()):
+    def render_settings(self, request, email=ChangeEmailForm(), email_success=False, password=ChangePasswordForm(), password_success=False, image=ChangeImageForm(), image_success=False, delete=DeleteAccountForm(), description=ChangeDescriptionForm()):
         return render(request, self.template_name, {
             "form_changeemail": email,
-            "form_changeemail_error": email_error,
+            "form_changeemail_success": email_success,
             "form_changepassword": password,
-            "form_changepassword_error": password_error,
+            "form_changepassword_success": password_success,
             "form_changeimage": image,
-            "form_changedescription": description,
-            "form_deleteaccount": delete
+            "form_changeimage_success": image_success,
+            "form_deleteaccount": delete,
+            "form_changedescription": description
         })
 
 
