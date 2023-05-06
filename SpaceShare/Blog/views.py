@@ -186,12 +186,9 @@ class Login(FormView):
                 user = UserModel.objects.get(login=form["login"].value())
             except UserModel.DoesNotExist:
                 user = None
-            if user != None:
-                if check_password(form["password"].value(), user.password):
-                    request.session["nickname"] = user.nickname
-                    request.session["image"] = user.image.url
-                else:
-                    return render(request, self.template_name, {"form": form, "error": True})
+            if user != None and check_password(form["password"].value(), user.password):
+                request.session["nickname"] = user.nickname
+                request.session["image"] = user.image.url
             else:
                 return render(request, self.template_name, {"form": form, "error": True})
         else:
@@ -214,7 +211,8 @@ class Settings(TemplateView):
         context["form_changepassword"] = ChangePasswordForm()
         context["form_changeimage"] = ChangeImageForm()
         context["form_deleteaccount"] = DeleteAccountForm()
-        context["form_changedescription"] = ChangeDescriptionForm()
+        context["form_changedescription"] = ChangeDescriptionForm(instance=UserModel.objects.get(
+            nickname=self.request.session.get("nickname")))
         return context
 
     def get(self, request, *args, **kwargs):
@@ -273,10 +271,16 @@ class Settings(TemplateView):
         else:
             return self.render_settings(request, delete=form)
 
-    def change_description(self, request):  # dokończ w dół
-        pass
+    def change_description(self, request):
+        form = ChangeDescriptionForm(request.POST, instance=UserModel.objects.get(
+            nickname=self.request.session.get("nickname")))
+        if form.is_valid():
+            form.save()
+            return self.render_settings(request, description=form, description_success=True)
+        else:
+            return self.render_settings(request, description=form)
 
-    def render_settings(self, request, email=ChangeEmailForm(), email_success=False, password=ChangePasswordForm(), password_success=False, image=ChangeImageForm(), image_success=False, delete=DeleteAccountForm(), description=ChangeDescriptionForm()):
+    def render_settings(self, request, email=ChangeEmailForm(), email_success=False, password=ChangePasswordForm(), password_success=False, image=ChangeImageForm(), image_success=False, delete=DeleteAccountForm(), description=ChangeDescriptionForm(), description_success=False):
         return render(request, self.template_name, {
             "form_changeemail": email,
             "form_changeemail_success": email_success,
@@ -285,7 +289,8 @@ class Settings(TemplateView):
             "form_changeimage": image,
             "form_changeimage_success": image_success,
             "form_deleteaccount": delete,
-            "form_changedescription": description
+            "form_changedescription": description,
+            "form_changedescription_success": description_success
         })
 
 
