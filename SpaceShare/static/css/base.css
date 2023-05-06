@@ -8,7 +8,7 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
-.navbar{
+.navbar {
     z-index: 11;
 }
 
@@ -41,6 +41,11 @@ body {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+}
+
+.nav-settings {
+    max-width: 54px;
+    height: 36px;
 }
 
 .banner-holder {
