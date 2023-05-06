@@ -212,17 +212,42 @@ class ChangeImageForm(forms.ModelForm):
         fields = ["image"]
         widgets = {
             'image': forms.FileInput(attrs={
-                'class': "form-control"
+                'class': 'form-control border border-secondary mb-2'
             })
         }
 
+    def clean(self):
+        cleaned_data = super(ChangeImageForm, self).clean()
+        if cleaned_data.get("image") == self.instance.image:
+            raise forms.ValidationError({
+                'image': 'This field is required.'
+            })
+        return cleaned_data
 
-class DeleteAccountForm(forms.Form):
-    password = forms.CharField(label="Old password", validators=[RegexValidator(
-        "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
-            'class': 'form-control border border-secondary mb-2',
-            'placeholder': 'Your password'
-        }))
+
+class DeleteAccountForm(forms.ModelForm):
+    class Meta:
+        model = UserModel
+        fields = ["password"]
+        widgets = {
+            'password': forms.PasswordInput(attrs={
+                'class': 'form-control border border-danger mb-2',
+                'placeholder': 'Your Password'
+            })
+        }
+
+    def clean(self):
+        cleaned_data = super(DeleteAccountForm, self).clean()
+        if not check_password(cleaned_data.get("password"), self.instance.password):
+            raise forms.ValidationError({
+                'password': 'The password is incorrect.'
+            })
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.delete()
+        return None
 
 
 class ChangeDescriptionForm(forms.Form):
