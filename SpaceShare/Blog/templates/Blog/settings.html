@@ -21,7 +21,7 @@
                                     <div class="mb-2">
                                         {% for form_item in form_changeemail %}
                                             {{ form_item }}
-                                            {{ form_item.errors }}
+                                            <span class="text-start">{{ form_item.errors }}</span>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -55,7 +55,7 @@
                                     <div class="mb-2">
                                         {% for form_item in form_changepassword %}
                                             {{ form_item }}
-                                            {{ form_item.errors }}
+                                            <span class="text-start">{{ form_item.errors }}</span>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -83,17 +83,16 @@
                     <div class="card-header bg-primary text-bg-primary">
                         Image
                     </div>
-                    <div class="card-body" enctype="multipart/form-data">
-                        <form method="POST">
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="row gx-2">
                                 <div class="col-md-12">
                                     <div class="mb-2">
-                                        {{ form_changeimage.image }}
-                                        <p>{{ form_changeimage.image.errors }}</p>
-                                        {% if form_changeimage_error %}
-                                            <p class="text-danger fw-bold">1</p>
-                                        {% endif %}
+                                        {% for form_item in form_changeimage %}
+                                            {{ form_item }}
+                                            <span class="text-start">{{ form_item.errors }}</span>
+                                        {% endfor %}
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -124,11 +123,10 @@
                             <div class="row gx-2">
                                 <div class="col-md-12">
                                     <div class="mb-2">
-                                        {{ form_deleteaccount.password }}
-                                        <p>{{ form_deleteaccount.password.errors }}</p>
-                                        {% if form_deleteaccount_error %}
-                                            <p class="text-danger fw-bold">The password is incorrect.</p>
-                                        {% endif %}
+                                        {% for form_item in form_deleteaccount %}
+                                            {{ form_item }}
+                                            <span class="text-start">{{ form_item.errors }}</span>
+                                        {% endfor %}
                                     </div>
                                 </div>
                                 <div class="col-md-12">
