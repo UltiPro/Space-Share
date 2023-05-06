@@ -189,6 +189,7 @@ class Login(FormView):
             if user != None:
                 if check_password(form["password"].value(), user.password):
                     request.session["nickname"] = user.nickname
+                    request.session["image"] = user.image.url
                 else:
                     return render(request, self.template_name, {"form": form, "error": True})
             else:
@@ -253,30 +254,26 @@ class Settings(TemplateView):
         else:
             return self.render_settings(request, password=form)
 
-    def change_image(self, request):  # dokończ w dół
+    def change_image(self, request):
         form = ChangeImageForm(request.POST, request.FILES, instance=UserModel.objects.get(
             nickname=self.request.session.get("nickname")))
         if form.is_valid():
-            form.image = request.FILES['image']
             form.save()
-            return self.render_settings(request, image=form)
+            request.session["image"] = form.instance.image.url
+            return self.render_settings(request, image=form, image_success=True)
         else:
             return self.render_settings(request, image=form)
 
     def delete_account(self, request):
-        form = DeleteAccountForm(request.POST)
+        form = DeleteAccountForm(request.POST, instance=UserModel.objects.get(
+            nickname=self.request.session.get("nickname")))
         if form.is_valid():
-            user = UserModel.objects.get(
-                nickname=self.request.session.get("nickname"))
-            if check_password(form["password"].value(), user.password):
-                user.delete()
-                return redirect("/logout")
-            else:
-                return self.render_settings(request, delete=form, delete_error=True)
+            form.save()
+            return redirect("/logout")
         else:
             return self.render_settings(request, delete=form)
 
-    def change_description(self, request):
+    def change_description(self, request):  # dokończ w dół
         pass
 
     def render_settings(self, request, email=ChangeEmailForm(), email_success=False, password=ChangePasswordForm(), password_success=False, image=ChangeImageForm(), image_success=False, delete=DeleteAccountForm(), description=ChangeDescriptionForm()):
