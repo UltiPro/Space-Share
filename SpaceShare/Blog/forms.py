@@ -212,7 +212,8 @@ class ChangeImageForm(forms.ModelForm):
         fields = ["image"]
         widgets = {
             'image': forms.FileInput(attrs={
-                'class': 'form-control border border-secondary mb-2'
+                'class': 'form-control border border-secondary mb-2',
+                'required': True
             })
         }
 
@@ -250,9 +251,22 @@ class DeleteAccountForm(forms.ModelForm):
         return None
 
 
-class ChangeDescriptionForm(forms.Form):
-    textarea = forms.CharField(widget=forms.Textarea(attrs={
-        'rows': '8',
-        'class': "form-control form-control-sm",
-        'placeholder': "Your profile description..."
-    }))
+class ChangeDescriptionForm(forms.ModelForm):
+    class Meta:
+        model = UserModel
+        fields = ["description"]
+        widgets = {
+            'description': forms.Textarea(attrs={
+                'rows': '8',
+                'class': "form-control form-control-sm border border-secondary mb-2",
+                'placeholder': "Your profile description...",
+                'min-length': 15,
+                'max-length': 2000
+            })
+        }
+        error_messages = {
+            'description': {
+                'min_length': ("Description should be minimum 15 characters long."),
+                'max_length': ("Description should be maximum 2000 characters long.")
+            }
+        }
