@@ -19,18 +19,10 @@
                             <div class="row gx-2">
                                 <div class="col-md-12">
                                     <div class="mb-2">
-                                        {{ form_changeemail.old_email }}
-                                        {{ form_changeemail.old_email.errors }}
-                                        {% if form_changeemail_error_1 %}
-                                            <p class="text-danger">Old email is incorrect.</p>
-                                        {% endif %}
-                                    </div>
-                                    <div class="mb-2">
-                                        {{ form_changeemail.new_email }}
-                                        {{ form_changeemail.new_email.errors }}
-                                        {% if form_changeemail_error_2 %}
-                                            <p class="text-danger">New email is currently occupied.</p>
-                                        {% endif %}
+                                        {% for form_item in form_changeemail %}
+                                            {{ form_item }}
+                                            {{ form_item.errors }}
+                                        {% endfor %}
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -39,6 +31,11 @@
                                             Save
                                         </button>
                                     </div>
+                                    {% if form_changeemail_success %}
+                                        <div class="mt-2">
+                                            <p class="text-success fw-bold mb-0">Email has been changed successfully.</p>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </form>
@@ -68,6 +65,11 @@
                                             Save
                                         </button>
                                     </div>
+                                    {% if form_changepassword_success %}
+                                        <div class="mt-2">
+                                            <p class="text-success fw-bold mb-0">Password has been changed successfully.</p>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </form>
@@ -81,16 +83,17 @@
                     <div class="card-header bg-primary text-bg-primary">
                         Image
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" enctype="multipart/form-data">
                         <form method="POST">
                             {% csrf_token %}
                             <div class="row gx-2">
                                 <div class="col-md-12">
                                     <div class="mb-2">
-                                        {% for form_item in form_changeimage %}
-                                            {{ form_item }}
-                                            {{ form_item.errors }}
-                                        {% endfor %}
+                                        {{ form_changeimage.image }}
+                                        <p>{{ form_changeimage.image.errors }}</p>
+                                        {% if form_changeimage_error %}
+                                            <p class="text-danger fw-bold">1</p>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -99,6 +102,11 @@
                                             Save
                                         </button>
                                     </div>
+                                    {% if form_changeimage_success %}
+                                        <div class="mt-2">
+                                            <p class="text-success fw-bold mb-0">Image has been changed successfully.</p>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </form>
@@ -116,10 +124,11 @@
                             <div class="row gx-2">
                                 <div class="col-md-12">
                                     <div class="mb-2">
-                                        {% for form_item in form_deleteaccount %}
-                                            {{ form_item }}
-                                            {{ form_item.errors }}
-                                        {% endfor %}
+                                        {{ form_deleteaccount.password }}
+                                        <p>{{ form_deleteaccount.password.errors }}</p>
+                                        {% if form_deleteaccount_error %}
+                                            <p class="text-danger fw-bold">The password is incorrect.</p>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="col-md-12">
