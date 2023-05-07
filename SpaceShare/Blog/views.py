@@ -1,5 +1,6 @@
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.views.generic.base import TemplateView
+from django.utils.datastructures import MultiValueDictKeyError
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
@@ -77,10 +78,16 @@ class PostsByTag(Posts):
         return context
 
 
-class PostsBySearch(ListView):  # dokończ
+class PostsBySearch(ListView):
     template_name = "Blog/posts_search.html"
     model = PostModel
     context_object_name = "posts"
+
+    def get(self, request, *args, **kwargs):
+        try:
+            return super().get(request, *args, **kwargs)
+        except MultiValueDictKeyError:
+            return redirect("/")
 
     def get_queryset(self):
         if not self.request.GET['search']:
