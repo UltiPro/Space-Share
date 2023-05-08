@@ -181,6 +181,13 @@ class Register(CreateView):
     form_class = UserRegisterForm
     success_url = "/login"
 
+    def post(self, request, *args, **kwargs):
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return render(request, "Blog/register_success.html")
+        return super().post(request, *args, **kwargs)
+
 
 class Login(FormView):
     template_name = "Blog/login.html"
