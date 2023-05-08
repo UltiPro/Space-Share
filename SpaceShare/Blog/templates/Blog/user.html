@@ -1,0 +1,52 @@
+{% extends 'Blog/base_blog.html' %}
+{% load static %}
+
+{% block doc_title %}
+    Space Share - {{ user.nickname }}
+{% endblock %}
+
+{% block doc_css %}
+    <style>
+        .banner-holder {
+            background-image: url("{% static 'Blog/images/user.jpg' %}");
+            background-position: center;
+        }
+    </style>
+{% endblock %}
+
+{% block blog_content %}
+    <header class="banner-holder py-5 mb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="banner-content text-center text-white my-5 py-5">
+                        <h1 class="fw-bolder">{{ user.nickname }}</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="py-3 mb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9 mt-3 mt-md-0 ">
+                    <div class="content-holder">
+                        <div class="post-content mb-2">
+                            {{ user.description|safe|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <img src="{{ user.image.url }}" alt="User" class="w-100 h-100 rounded-top">
+                        </div>
+                        <div class="card-footer p-2 small">
+                            <span class="h6"><span class="fw-bold">E-mail:</span> {{ user.email }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
