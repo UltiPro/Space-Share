@@ -299,7 +299,8 @@ class Settings(TemplateView):
             "form_changeimage_success": image_success,
             "form_deleteaccount": delete,
             "form_changedescription": description,
-            "form_changedescription_success": description_success
+            "form_changedescription_success": description_success,
+            "user_slug": UserModel.objects.get(nickname=self.request.session.get("nickname")).slug
         })
 
 
