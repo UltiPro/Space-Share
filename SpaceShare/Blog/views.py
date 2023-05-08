@@ -1,6 +1,7 @@
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.views.generic.base import TemplateView
 from django.utils.datastructures import MultiValueDictKeyError
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
@@ -92,7 +93,7 @@ class PostsBySearch(ListView):
     def get_queryset(self):
         if not self.request.GET['search']:
             return super().get_queryset().filter(title__icontains="Space").order_by("-date")
-        return super().get_queryset().filter(title__icontains=self.request.GET['search']).order_by("-date")
+        return super().get_queryset().filter(Q(title__icontains=self.request.GET['search']) | Q(content__icontains=self.request.GET['search'])).order_by("-date")
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
