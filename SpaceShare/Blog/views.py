@@ -220,6 +220,8 @@ class Settings(TemplateView):
         context["form_deleteaccount"] = DeleteAccountForm()
         context["form_changedescription"] = ChangeDescriptionForm(instance=UserModel.objects.get(
             nickname=self.request.session.get("nickname")))
+        context["user_slug"] = UserModel.objects.get(
+            nickname=self.request.session.get("nickname")).slug
         return context
 
     def get(self, request, *args, **kwargs):
@@ -301,5 +303,7 @@ class Settings(TemplateView):
         })
 
 
-class User(TemplateView):  # dokończ
+class User(DetailView):
     template_name = "Blog/user.html"
+    model = UserModel
+    context_object_name = "user"
