@@ -5,6 +5,74 @@ from .models import Newsletter as NewsletterModel, Author as AuthorModel, Tag as
 from .views import Index as IndexView, Posts as PostsView, PostsBySearch as PostsBySearchView, PostsByTag as PostsByTagView, Post as PostView, Authors as AuthorsView, Author as AuthorView, AuthorPosts as AuthorPostsView, AuthorPostsByTag as AuthorPostsByTagView, About as AboutView, Register as RegisterView, Login as LoginView, Logout as LogoutView, Settings as SettingsView, User as UserView
 
 
+class TestModels(TestCase):
+    def setUp(self):
+        self.newsletter = NewsletterModel.objects.create(
+            name="Testname",
+            surname="Testsurname",
+            email="test@test.com"
+        )
+        self.author = AuthorModel.objects.create(
+            name="Testname",
+            surname="Testsurname",
+            email="test@test.com"
+        )
+        self.tag = TagModel.objects.create(
+            tag="Space"
+        )
+        self.post = PostModel.objects.create(
+            title="Test title",
+            author=self.author,
+            content="Content test for post by any author",
+            image="users/default.png"
+        )
+        self.post.tags.add(self.tag)
+        self.user = UserModel.objects.create(
+            login="test",
+            password="login123456!",
+            nickname="Test",
+            email="Test@test.com"
+        )
+        self.comment = CommentModel.objects.create(
+            post=self.post,
+            user=self.user,
+            content="Test content"
+        )
+        return super().setUp()
+
+    def test_newsletter(self):
+        self.assertEqual(NewsletterModel.objects.all().count(), 1)
+        self.assertEquals(self.newsletter.__str__(), "Testname Testsurname")
+
+    def test_author(self):
+        self.assertEqual(AuthorModel.objects.all().count(), 1)
+        self.assertEquals(self.author.__str__(), "Testname Testsurname")
+        self.assertEquals(self.author.slug, "testname-testsurname")
+
+    def test_tag(self):
+        self.assertEqual(TagModel.objects.all().count(), 1)
+        self.assertEquals(self.tag.tag, "Space")
+
+    def test_post(self):
+        self.assertEqual(PostModel.objects.all().count(), 1)
+        self.assertEquals(self.post.__str__(),
+                          "Test title by Testname Testsurname")
+        self.assertEquals(self.post.slug, "test-title")
+
+    def test_user(self):
+        self.assertEqual(UserModel.objects.all().count(), 1)
+        self.assertEquals(self.user.__str__(), "Test")
+        self.assertEquals(self.user.slug, "test")
+
+    def test_comment(self):
+        self.assertEqual(CommentModel.objects.all().count(), 1)
+        self.assertEquals(self.comment.__str__(), "Test - Test title")
+
+
+class TestForms(SimpleTestCase):
+    pass
+
+
 class TestUrls(SimpleTestCase):
     def test_index(self):
         url = reverse("index")
@@ -70,11 +138,6 @@ class TestUrls(SimpleTestCase):
 class TestViews(TestCase):
     def setUp(self):
         self.client = Client()
-        self.newsletter = NewsletterModel.objects.create(
-            name="Testname",
-            surname="Testsurname",
-            email="test@test.com"
-        )
         self.author = AuthorModel.objects.create(
             name="Testname",
             surname="Testsurname",
@@ -109,10 +172,38 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "Blog/index.html")
 
+    def test_index_post(self):
+        response = self.client.post(reverse("index"), {
+            "name": "Testname",
+            "surname": "Testsurname",
+            "email": "test@test.com"
+        })
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue(NewsletterModel.objects.get(email="test@test.com"))
+
+    def test_index_post_empty(self):
+        response = self.client.post(reverse("index"), {})
+        self.assertEquals(response.status_code, 200)
+        self.assertEqual(NewsletterModel.objects.all().count(), 0)
+
     def test_posts_get(self):
         response = self.client.get(reverse("posts"))
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "Blog/posts.html")
+
+    def test_posts_post(self):
+        response = self.client.post(reverse("posts"), {
+            "name": "Testname",
+            "surname": "Testsurname",
+            "email": "test2@test.com"
+        })
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue(NewsletterModel.objects.get(email="test2@test.com"))
+
+    def test_posts_post_empty(self):
+        response = self.client.post(reverse("posts"), {})
+        self.assertEquals(response.status_code, 200)
+        self.assertEqual(NewsletterModel.objects.all().count(), 0)
 
     def test_posts_by_search_get(self):
         response = self.client.get(
@@ -125,10 +216,33 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "Blog/posts.html")
 
+    def test_posts_by_tag_post(self):
+        response = self.client.post(reverse("posts_by_tag", args=[self.tag]), {
+            "name": "Testname",
+            "surname": "Testsurname",
+            "email": "test3@test.com"
+        })
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue(NewsletterModel.objects.get(email="test3@test.com"))
+
+    def test_posts_by_tag_post_empty(self):
+        response = self.client.post(
+            reverse("posts_by_tag", args=[self.tag]), {})
+        self.assertEquals(response.status_code, 200)
+        self.assertEqual(NewsletterModel.objects.all().count(), 0)
+
     def test_post_get(self):
         response = self.client.get(reverse("post", args=[self.post.slug]))
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "Blog/post.html")
+
+    '''def test_post_post(self):
+        response = self.client.post(reverse("post", args=[self.post.slug]), {
+            "content": "Test text for post method"
+        })
+        self.assertEquals(response.status_code, 200)
+        self.assertTrue(CommentModel.objects.get(
+            content="Test text for post method"))'''
 
     def test_authors_get(self):
         response = self.client.get(reverse("authors"))
