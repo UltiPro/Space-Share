@@ -1,5 +1,7 @@
 from django.test import TestCase, SimpleTestCase, Client
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse, resolve
+from django.contrib.auth.hashers import check_password
 
 from .models import Newsletter as NewsletterModel, Author as AuthorModel, Tag as TagModel, Post as PostModel, User as UserModel, Comment as CommentModel
 from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm, ChangeEmailForm, ChangePasswordForm, ChangeImageForm, DeleteAccountForm, ChangeDescriptionForm
@@ -72,11 +74,12 @@ class TestModels(TestCase):
 
 class TestForms(TestCase):
     def setUp(self):
+        self.client = Client()
         self.user = UserModel.objects.create(
             login="test",
-            password="login123456!",
+            password="Test123456!",
             nickname="Test",
-            email="Test@test.com"
+            email="test@test.com"
         )
         self.author = AuthorModel.objects.create(
             name="Testname",
@@ -89,11 +92,11 @@ class TestForms(TestCase):
             content="Content test for post by any author",
             image="users/default.png"
         )
-        session = self.client.session
-        session.update({
+        self.session = self.client.session
+        self.session.update({
             "nickname": "Test"
         })
-        session.save()
+        self.session.save()
         return super().setUp()
 
     def test_newsletter_form_valid(self):
@@ -169,7 +172,31 @@ class TestForms(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 1)
 
-    # tutaj
+    def test_change_email_form_valid(self):
+        form = ChangeEmailForm(data={
+            "old_email": self.user.email,
+            "email": "test3@test.com"
+        }, instance=self.user)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEquals(UserModel.objects.get(
+            nickname=self.user.nickname).email, "test3@test.com")
+
+    def test_change_email_form_invalid(self):
+        form = ChangeEmailForm(data={
+            "old_email": self.user.email,
+            "email": "test@test.com"
+        }, instance=self.user)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(len(form.errors), 1)
+
+    def test_change_password_form_invalid(self):
+        form = ChangePasswordForm(data={
+            "old_password": self.user.password,
+            "password": "Test123"
+        }, instance=self.user)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(len(form.errors), 2)
 
 
 class TestUrls(SimpleTestCase):
