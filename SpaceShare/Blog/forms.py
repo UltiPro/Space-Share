@@ -28,18 +28,23 @@ class NewsletterForm(forms.ModelForm):
             })
         }
 
-    def send_email(self, email, name, surname):
+    def send_email(self):
+        cleaned_data = super(NewsletterForm, self).clean()
         html_mail = render_to_string('Blog/emails/newsletter.html', {
-            'name': name,
-            'surname': surname
+            'name': cleaned_data.get("name"),
+            'surname': cleaned_data.get("surname")
         })
-        send_mail(
-            "SpaceShare - subscribed to the newsletter!",
-            "You have subscribed to the newsletter. It is not you? Please contact SpaceShare administration.",
-            "newsletter@spaceshare.com",
-            [email],
-            fail_silently=True,
-            html_message=html_mail)
+        try:
+            send_mail(
+                "SpaceShare - subscribed to the newsletter!",
+                "You have subscribed to the newsletter. It is not you? Please contact SpaceShare administration.",
+                "newsletter@spaceshare.com",
+                [cleaned_data.get("email")],
+                fail_silently=True,
+                html_message=html_mail)
+            return True
+        except:
+            return False
 
 
 class UserRegisterForm(forms.ModelForm):
