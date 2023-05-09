@@ -2,6 +2,7 @@ from django.test import TestCase, SimpleTestCase, Client
 from django.urls import reverse, resolve
 
 from .models import Newsletter as NewsletterModel, Author as AuthorModel, Tag as TagModel, Post as PostModel, User as UserModel, Comment as CommentModel
+from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm, ChangeEmailForm, ChangePasswordForm, ChangeImageForm, DeleteAccountForm, ChangeDescriptionForm
 from .views import Index as IndexView, Posts as PostsView, PostsBySearch as PostsBySearchView, PostsByTag as PostsByTagView, Post as PostView, Authors as AuthorsView, Author as AuthorView, AuthorPosts as AuthorPostsView, AuthorPostsByTag as AuthorPostsByTagView, About as AboutView, Register as RegisterView, Login as LoginView, Logout as LogoutView, Settings as SettingsView, User as UserView
 
 
@@ -69,8 +70,106 @@ class TestModels(TestCase):
         self.assertEquals(self.comment.__str__(), "Test - Test title")
 
 
-class TestForms(SimpleTestCase):
-    pass
+class TestForms(TestCase):
+    def setUp(self):
+        self.user = UserModel.objects.create(
+            login="test",
+            password="login123456!",
+            nickname="Test",
+            email="Test@test.com"
+        )
+        self.author = AuthorModel.objects.create(
+            name="Testname",
+            surname="Testsurname",
+            email="test@test.com"
+        )
+        self.post = PostModel.objects.create(
+            title="Test title",
+            author=self.author,
+            content="Content test for post by any author",
+            image="users/default.png"
+        )
+        session = self.client.session
+        session.update({
+            "nickname": "Test"
+        })
+        session.save()
+        return super().setUp()
+
+    def test_newsletter_form_valid(self):
+        form = NewsletterForm(data={
+            'name': "Testname",
+            'surname': "Testsurname",
+            'email': "test@test.com"
+        })
+        self.assertTrue(form.is_valid())
+        self.assertTrue(form.send_email())
+        form.save()
+        self.assertEqual(NewsletterModel.objects.all().count(), 1)
+
+    def test_newsletter_form_invalid(self):
+        form = NewsletterForm(data={
+            'name': "",
+            'surname': "",
+            'email': "test@test."
+        })
+        self.assertFalse(form.is_valid())
+        self.assertEquals(len(form.errors), 3)
+
+    def test_user_registration_form_valid(self):
+        form = UserRegisterForm(data={
+            'login': 'Test2',
+            'password': "Test1234!",
+            'c_password': "Test1234!",
+            'nickname': "Test2",
+            "email": "test2@test.com"
+        })
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEqual(UserModel.objects.all().count(), 2)
+
+    def test_user_registration_form_invalid(self):
+        form = UserRegisterForm(data={
+            'login': '',
+            'password': "Test123",
+            'c_password': "Test1234",
+            'nickname': "",
+            "email": "test@test."
+        })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(len(form.errors), 5)
+
+    def test_user_login_form_valid(self):
+        form = UserLoginForm(data={
+            'login': 'Test',
+            'password': "Test1234!"
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_user_login_form_invalid(self):
+        form = UserLoginForm(data={
+            'login': '',
+            'password': "Test1234"
+        })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(len(form.errors), 2)
+
+    def test_comment_form_valid(self):
+        form = CommentForm(data={
+            "content": "Test comment for any post"
+        })
+        self.assertTrue(form.is_valid())
+        form.save(self.user.nickname, self.post.slug)
+        self.assertEqual(CommentModel.objects.all().count(), 1)
+
+    def test_comment_form_invalid(self):
+        form = CommentForm(data={
+            "content": ""
+        })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(len(form.errors), 1)
+
+    # tutaj
 
 
 class TestUrls(SimpleTestCase):
