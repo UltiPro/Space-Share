@@ -1,5 +1,5 @@
-const modal = new bootstrap.Modal('#subscribe-modal');
+const modal = new bootstrap.Modal("#subscribe-modal");
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener("DOMContentLoaded", () => {
     modal.show();
 });

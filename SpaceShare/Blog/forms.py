@@ -8,31 +8,31 @@ from .models import Newsletter as NewsletterModel, User as UserModel, Post as Po
 
 
 class NewsletterForm(forms.ModelForm):
-    field_order = ['name', 'surname', 'email']
+    field_order = ["name", "surname", "email"]
 
     class Meta:
         model = NewsletterModel
-        fields = '__all__'
+        fields = "__all__"
         widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'form-control form-control-sm',
-                'placeholder': 'First Name'
+            "name": forms.TextInput(attrs={
+                "class": "form-control form-control-sm",
+                "placeholder": "First Name"
             }),
-            'surname': forms.TextInput(attrs={
-                'class': 'form-control form-control-sm',
-                'placeholder': 'Last Name'
+            "surname": forms.TextInput(attrs={
+                "class": "form-control form-control-sm",
+                "placeholder": "Last Name"
             }),
-            'email': forms.EmailInput(attrs={
-                'class': 'form-control form-control-sm',
-                'placeholder': 'E-mail'
+            "email": forms.EmailInput(attrs={
+                "class": "form-control form-control-sm",
+                "placeholder": "E-mail"
             })
         }
 
     def send_email(self):
         cleaned_data = super(NewsletterForm, self).clean()
-        html_mail = render_to_string('Blog/emails/newsletter.html', {
-            'name': cleaned_data.get("name"),
-            'surname': cleaned_data.get("surname")
+        html_mail = render_to_string("Blog/emails/newsletter.html", {
+            "name": cleaned_data.get("name"),
+            "surname": cleaned_data.get("surname")
         })
         try:
             send_mail(
@@ -50,30 +50,30 @@ class NewsletterForm(forms.ModelForm):
 class UserRegisterForm(forms.ModelForm):
     c_password = forms.CharField(label="Confirm Password", validators=[RegexValidator(
         "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
-            'class': 'form-control border border-secondary',
-            'placeholder': 'Confirm Password'
+            "class": "form-control border border-secondary",
+            "placeholder": "Confirm Password"
         }))
-    field_order = ['login', 'password', 'c_password', 'nickname', 'email']
+    field_order = ["login", "password", "c_password", "nickname", "email"]
 
     class Meta:
         model = UserModel
-        exclude = ['slug', 'image', 'description']
+        exclude = ["slug", "image", "description"]
         widgets = {
-            'login': forms.TextInput(attrs={
-                'class': 'form-control border border-secondary',
-                'placeholder': 'Login'
+            "login": forms.TextInput(attrs={
+                "class": "form-control border border-secondary",
+                "placeholder": "Login"
             }),
-            'password': forms.PasswordInput(attrs={
-                'class': 'form-control border border-secondary',
-                'placeholder': 'Password'
+            "password": forms.PasswordInput(attrs={
+                "class": "form-control border border-secondary",
+                "placeholder": "Password"
             }),
-            'nickname': forms.TextInput(attrs={
-                'class': 'form-control border border-secondary',
-                'placeholder': 'Nickname'
+            "nickname": forms.TextInput(attrs={
+                "class": "form-control border border-secondary",
+                "placeholder": "Nickname"
             }),
-            'email': forms.EmailInput(attrs={
-                'class': 'form-control border border-secondary',
-                'placeholder': 'E-mail'
+            "email": forms.EmailInput(attrs={
+                "class": "form-control border border-secondary",
+                "placeholder": "E-mail"
             })
         }
 
@@ -83,8 +83,8 @@ class UserRegisterForm(forms.ModelForm):
         c_password = cleaned_data.get("c_password")
         if password != c_password:
             raise forms.ValidationError({
-                'password': 'Passwords do not match!',
-                'c_password': 'Passwords do not match!'
+                "password": "Passwords do not match!",
+                "c_password": "Passwords do not match!"
             })
         return cleaned_data
 
@@ -99,15 +99,15 @@ class UserRegisterForm(forms.ModelForm):
 class UserLoginForm(forms.Form):
     login = forms.CharField(label="Login", validators=[RegexValidator(
         "^(?=.*?[a-zA-Z\d])[a-zA-Z][a-zA-Z\d_-]{2,28}[a-zA-Z\d]$", message="Login must be between 4 and 30 characters long and must start with a letter and end with a letter or number. It can contain a floor and dash between the start and end.")], widget=forms.TextInput(attrs={
-            'class': 'form-control border border-secondary',
-            'placeholder': 'Login'
+            "class": "form-control border border-secondary",
+            "placeholder": "Login"
         }))
     password = forms.CharField(label="Password", validators=[RegexValidator(
         "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
-            'class': 'form-control border border-secondary',
-            'placeholder': 'Confirm Password'
+            "class": "form-control border border-secondary",
+            "placeholder": "Confirm Password"
         }))
-    field_order = ['login', 'password']
+    field_order = ["login", "password"]
 
 
 class CommentForm(forms.ModelForm):
@@ -115,16 +115,16 @@ class CommentForm(forms.ModelForm):
         model = CommentModel
         fields = ["content"]
         widgets = {
-            'content': forms.Textarea(attrs={
-                'rows': '3',
-                'class': "form-control form-control-sm",
-                'placeholder': "Your comment..."
+            "content": forms.Textarea(attrs={
+                "rows": "3",
+                "class": "form-control form-control-sm",
+                "placeholder": "Your comment..."
             })
         }
         error_messages = {
-            'content': {
-                'min_length': ("Comment should be minimum 2 characters long."),
-                'max_length': ("Comment should be maximum 2000 characters long.")
+            "content": {
+                "min_length": ("Comment should be minimum 2 characters long."),
+                "max_length": ("Comment should be maximum 2000 characters long.")
             }
         }
 
@@ -140,18 +140,18 @@ class CommentForm(forms.ModelForm):
 class ChangeEmailForm(forms.ModelForm):
     old_email = forms.EmailField(label="New E-mail", validators=[RegexValidator(
         "^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$", message="Incorrect expression of e-mail.")], widget=forms.EmailInput({
-            'class': 'form-control border border-secondary mb-2',
-            'placeholder': 'Old E-mail'
+            "class": "form-control border border-secondary mb-2",
+            "placeholder": "Old E-mail"
         }))
-    field_order = ['old_email', 'email']
+    field_order = ["old_email", "email"]
 
     class Meta:
         model = UserModel
         fields = ["email"]
         widgets = {
-            'email': forms.EmailInput(attrs={
-                'class': 'form-control border border-secondary mb-2',
-                'placeholder': 'New E-mail'
+            "email": forms.EmailInput(attrs={
+                "class": "form-control border border-secondary mb-2",
+                "placeholder": "New E-mail"
             })
         }
 
@@ -164,15 +164,15 @@ class ChangeEmailForm(forms.ModelForm):
             is_email_occupied = None
         if cleaned_data.get("old_email") != self.instance.email:
             raise forms.ValidationError({
-                'old_email': 'The current email address is invalid.'
+                "old_email": "The current email address is invalid."
             })
         if cleaned_data.get("old_email") == cleaned_data.get("email"):
             raise forms.ValidationError({
-                'email': 'The old email cannot be new email.'
+                "email": "The old email cannot be new email."
             })
         if is_email_occupied:
             raise forms.ValidationError({
-                'email': 'The email you entered is already taken.'
+                "email": "The email you entered is already taken."
             })
         return cleaned_data
 
@@ -180,18 +180,18 @@ class ChangeEmailForm(forms.ModelForm):
 class ChangePasswordForm(forms.ModelForm):
     old_password = forms.CharField(label="Old password", validators=[RegexValidator(
         "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
-            'class': 'form-control border border-secondary mb-2',
-            'placeholder': 'Old password'
+            "class": "form-control border border-secondary mb-2",
+            "placeholder": "Old password"
         }))
-    field_order = ['old_password', 'password']
+    field_order = ["old_password", "password"]
 
     class Meta:
         model = UserModel
         fields = ["password"]
         widgets = {
-            'password': forms.PasswordInput(attrs={
-                'class': 'form-control border border-secondary mb-2',
-                'placeholder': 'New Password'
+            "password": forms.PasswordInput(attrs={
+                "class": "form-control border border-secondary mb-2",
+                "placeholder": "New Password"
             })
         }
 
@@ -199,7 +199,7 @@ class ChangePasswordForm(forms.ModelForm):
         cleaned_data = super(ChangePasswordForm, self).clean()
         if not check_password(cleaned_data.get("old_password"), self.instance.password):
             raise forms.ValidationError({
-                'old_password': 'Your current password is incorrect.'
+                "old_password": "Your current password is incorrect."
             })
         return cleaned_data
 
@@ -216,9 +216,9 @@ class ChangeImageForm(forms.ModelForm):
         model = UserModel
         fields = ["image"]
         widgets = {
-            'image': forms.FileInput(attrs={
-                'class': 'form-control border border-secondary mb-2',
-                'required': True
+            "image": forms.FileInput(attrs={
+                "class": "form-control border border-secondary mb-2",
+                "required": True
             })
         }
 
@@ -226,7 +226,7 @@ class ChangeImageForm(forms.ModelForm):
         cleaned_data = super(ChangeImageForm, self).clean()
         if cleaned_data.get("image") == self.instance.image:
             raise forms.ValidationError({
-                'image': 'This field is required.'
+                "image": "This field is required."
             })
         return cleaned_data
 
@@ -236,9 +236,9 @@ class DeleteAccountForm(forms.ModelForm):
         model = UserModel
         fields = ["password"]
         widgets = {
-            'password': forms.PasswordInput(attrs={
-                'class': 'form-control border border-danger mb-2',
-                'placeholder': 'Your Password'
+            "password": forms.PasswordInput(attrs={
+                "class": "form-control border border-danger mb-2",
+                "placeholder": "Your Password"
             })
         }
 
@@ -246,7 +246,7 @@ class DeleteAccountForm(forms.ModelForm):
         cleaned_data = super(DeleteAccountForm, self).clean()
         if not check_password(cleaned_data.get("password"), self.instance.password):
             raise forms.ValidationError({
-                'password': 'The password is incorrect.'
+                "password": "The password is incorrect."
             })
         return cleaned_data
 
@@ -261,17 +261,17 @@ class ChangeDescriptionForm(forms.ModelForm):
         model = UserModel
         fields = ["description"]
         widgets = {
-            'description': forms.Textarea(attrs={
-                'rows': '8',
-                'class': "form-control form-control-sm border border-secondary mb-2",
-                'placeholder': "Your profile description...",
-                'min-length': 15,
-                'max-length': 2000
+            "description": forms.Textarea(attrs={
+                "rows": "8",
+                "class": "form-control form-control-sm border border-secondary mb-2",
+                "placeholder": "Your profile description...",
+                "min-length": 15,
+                "max-length": 2000
             })
         }
         error_messages = {
-            'description': {
-                'min_length': ("Description should be minimum 15 characters long."),
-                'max_length': ("Description should be maximum 2000 characters long.")
+            "description": {
+                "min_length": ("Description should be minimum 15 characters long."),
+                "max_length": ("Description should be maximum 2000 characters long.")
             }
         }

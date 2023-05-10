@@ -44,9 +44,9 @@ class Posts(FormView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['title'] = "Posts"
+        context["title"] = "Posts"
         context["posts"] = PostModel.objects.all().order_by("-date")
-        context['tags'] = TagModel.objects.all().order_by("tag")
+        context["tags"] = TagModel.objects.all().order_by("tag")
         return context
 
     def form_valid(self, form):
@@ -69,11 +69,11 @@ class Posts(FormView):
 class PostsByTag(Posts):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['title'] = f"{self.kwargs['str']} Posts"
-        tag = get_object_or_404(TagModel, tag=self.kwargs['str'])
+        context["title"] = f'{self.kwargs["str"]} Posts'
+        tag = get_object_or_404(TagModel, tag=self.kwargs["str"])
         context["posts"] = PostModel.objects.all().order_by(
             "-date").filter(tags__tag=tag)
-        context['active_tag'] = self.kwargs['str']
+        context["active_tag"] = self.kwargs["str"]
         return context
 
 
@@ -89,16 +89,16 @@ class PostsBySearch(ListView):
             return redirect("/")
 
     def get_queryset(self):
-        if not self.request.GET['search']:
+        if not self.request.GET["search"]:
             return super().get_queryset().filter(title__icontains="Space").order_by("-date")
-        return super().get_queryset().filter(Q(title__icontains=self.request.GET['search']) | Q(content__icontains=self.request.GET['search'])).order_by("-date")
+        return super().get_queryset().filter(Q(title__icontains=self.request.GET["search"]) | Q(content__icontains=self.request.GET["search"])).order_by("-date")
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        if (not self.request.GET['search']):
-            context['search'] = "Space"
+        if (not self.request.GET["search"]):
+            context["search"] = "Space"
         else:
-            context['search'] = f"{self.request.GET['search']}"
+            context["search"] = f'{self.request.GET["search"]}'
         return context
 
 
@@ -108,9 +108,9 @@ class Post(FormView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['post'] = PostModel.objects.get(slug=self.kwargs['slug'])
-        context['comments'] = CommentModel.objects.all().filter(
-            post=PostModel.objects.get(slug=self.kwargs['slug'])).order_by("-date")
+        context["post"] = PostModel.objects.get(slug=self.kwargs["slug"])
+        context["comments"] = CommentModel.objects.all().filter(
+            post=PostModel.objects.get(slug=self.kwargs["slug"])).order_by("-date")
         return context
 
     def form_valid(self, form):
@@ -122,7 +122,7 @@ class Post(FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("post", kwargs={"slug": self.kwargs['slug']}) + "#comments"
+        return reverse("post", kwargs={"slug": self.kwargs["slug"]}) + "#comments"
 
 
 class Authors(ListView):
@@ -146,26 +146,26 @@ class AuthorPosts(ListView):
     context_object_name = "posts"
 
     def get_queryset(self):
-        return super().get_queryset().filter(author=AuthorModel.objects.get(slug=self.kwargs['slug'])).order_by("-date")
+        return super().get_queryset().filter(author=AuthorModel.objects.get(slug=self.kwargs["slug"])).order_by("-date")
 
     def get_context_data(self, *args, **kwargs):
-        author = AuthorModel.objects.get(slug=self.kwargs['slug'])
+        author = AuthorModel.objects.get(slug=self.kwargs["slug"])
         context = super().get_context_data(*args, **kwargs)
-        context['author_slug'] = author.slug
-        context['author_name'] = author.name
-        context['author_surname'] = author.surname
-        context['tags'] = TagModel.objects.all().order_by("tag")
+        context["author_slug"] = author.slug
+        context["author_name"] = author.name
+        context["author_surname"] = author.surname
+        context["tags"] = TagModel.objects.all().order_by("tag")
         return context
 
 
 class AuthorPostsByTag(AuthorPosts):
     def get_queryset(self):
-        tag = get_object_or_404(TagModel, tag=self.kwargs['str'])
+        tag = get_object_or_404(TagModel, tag=self.kwargs["str"])
         return super().get_queryset().filter(tags__tag=tag)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['active_tag'] = self.kwargs['str']
+        context["active_tag"] = self.kwargs["str"]
         return context
 
 
