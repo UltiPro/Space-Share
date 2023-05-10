@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
-from .models import Newsletter as NewsletterModel, User as UserModel, Post as PostModel, Comment as CommentModel
+from .models import Newsletter as NewsletterModel, Author as AuthorModel, User as UserModel, Post as PostModel, Comment as CommentModel
 
 
 class NewsletterForm(forms.ModelForm):
@@ -86,6 +86,13 @@ class UserRegisterForm(forms.ModelForm):
                 "password": "Passwords do not match!",
                 "c_password": "Passwords do not match!"
             })
+        try:
+            AuthorModel.objects.get(email=cleaned_data.get("email"))
+            raise forms.ValidationError({
+                "email": "The email you entered is already taken."
+            })
+        except AuthorModel.DoesNotExist:
+            pass
         return cleaned_data
 
     def save(self, commit=True):
@@ -158,10 +165,15 @@ class ChangeEmailForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(ChangeEmailForm, self).clean()
         try:
-            is_email_occupied = UserModel.objects.get(
+            is_email_occupied_by_user = UserModel.objects.get(
                 email=cleaned_data.get("email"))
         except UserModel.DoesNotExist:
-            is_email_occupied = None
+            is_email_occupied_by_user = None
+        try:
+            is_email_occupied_by_author = AuthorModel.objects.get(
+                email=cleaned_data.get("email"))
+        except AuthorModel.DoesNotExist:
+            is_email_occupied_by_author = None
         if cleaned_data.get("old_email") != self.instance.email:
             raise forms.ValidationError({
                 "old_email": "The current email address is invalid."
@@ -170,7 +182,7 @@ class ChangeEmailForm(forms.ModelForm):
             raise forms.ValidationError({
                 "email": "The old email cannot be new email."
             })
-        if is_email_occupied:
+        if is_email_occupied_by_user or is_email_occupied_by_author:
             raise forms.ValidationError({
                 "email": "The email you entered is already taken."
             })
