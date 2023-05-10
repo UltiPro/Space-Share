@@ -48,7 +48,7 @@ class NewsletterForm(forms.ModelForm):
 
 
 class UserRegisterForm(forms.ModelForm):
-    c_password = forms.CharField(label="Confirm Password", validators=[regex_validator_password], widget=forms.PasswordInput(attrs={
+    c_password = forms.CharField(label="Confirm Password", widget=forms.PasswordInput(attrs={
         "class": "form-control border border-secondary",
         "placeholder": "Confirm Password"
     }))
@@ -82,7 +82,6 @@ class UserRegisterForm(forms.ModelForm):
         c_password = cleaned_data.get("c_password")
         if password != c_password:
             raise forms.ValidationError({
-                "password": "Passwords do not match!",
                 "c_password": "Passwords do not match!"
             })
         try:
