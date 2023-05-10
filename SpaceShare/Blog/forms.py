@@ -1,10 +1,10 @@
 from django import forms
-from django.core.validators import RegexValidator
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 from .models import Newsletter as NewsletterModel, Author as AuthorModel, User as UserModel, Post as PostModel, Comment as CommentModel
+from .regexes import regex_validator_email, regex_validator_login, regex_validator_password
 
 
 class NewsletterForm(forms.ModelForm):
@@ -48,11 +48,10 @@ class NewsletterForm(forms.ModelForm):
 
 
 class UserRegisterForm(forms.ModelForm):
-    c_password = forms.CharField(label="Confirm Password", validators=[RegexValidator(
-        "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
-            "class": "form-control border border-secondary",
-            "placeholder": "Confirm Password"
-        }))
+    c_password = forms.CharField(label="Confirm Password", validators=[regex_validator_password], widget=forms.PasswordInput(attrs={
+        "class": "form-control border border-secondary",
+        "placeholder": "Confirm Password"
+    }))
     field_order = ["login", "password", "c_password", "nickname", "email"]
 
     class Meta:
@@ -104,16 +103,14 @@ class UserRegisterForm(forms.ModelForm):
 
 
 class UserLoginForm(forms.Form):
-    login = forms.CharField(label="Login", validators=[RegexValidator(
-        "^(?=.*?[a-zA-Z\d])[a-zA-Z][a-zA-Z\d_-]{2,28}[a-zA-Z\d]$", message="Login must be between 4 and 30 characters long and must start with a letter and end with a letter or number. It can contain a floor and dash between the start and end.")], widget=forms.TextInput(attrs={
-            "class": "form-control border border-secondary",
-            "placeholder": "Login"
-        }))
-    password = forms.CharField(label="Password", validators=[RegexValidator(
-        "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
-            "class": "form-control border border-secondary",
-            "placeholder": "Confirm Password"
-        }))
+    login = forms.CharField(label="Login", validators=[regex_validator_login], widget=forms.TextInput(attrs={
+        "class": "form-control border border-secondary",
+        "placeholder": "Login"
+    }))
+    password = forms.CharField(label="Password", validators=[regex_validator_password], widget=forms.PasswordInput(attrs={
+        "class": "form-control border border-secondary",
+        "placeholder": "Confirm Password"
+    }))
     field_order = ["login", "password"]
 
 
@@ -145,11 +142,10 @@ class CommentForm(forms.ModelForm):
 
 
 class ChangeEmailForm(forms.ModelForm):
-    old_email = forms.EmailField(label="New E-mail", validators=[RegexValidator(
-        "^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$", message="Incorrect expression of e-mail.")], widget=forms.EmailInput({
-            "class": "form-control border border-secondary mb-2",
-            "placeholder": "Old E-mail"
-        }))
+    old_email = forms.EmailField(label="New E-mail", validators=[regex_validator_email], widget=forms.EmailInput({
+        "class": "form-control border border-secondary mb-2",
+        "placeholder": "Old E-mail"
+    }))
     field_order = ["old_email", "email"]
 
     class Meta:
@@ -190,11 +186,10 @@ class ChangeEmailForm(forms.ModelForm):
 
 
 class ChangePasswordForm(forms.ModelForm):
-    old_password = forms.CharField(label="Old password", validators=[RegexValidator(
-        "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?])[a-zA-Z0-9.~!@#$%^&*()+=[\]\\;:'\"/,|{}<>?]{8,40}$", message="Password must be between 8 and 40 characters long, contain one lowercase and one uppercase letter, one number and one special character.")], widget=forms.PasswordInput(attrs={
-            "class": "form-control border border-secondary mb-2",
-            "placeholder": "Old password"
-        }))
+    old_password = forms.CharField(label="Old password", validators=[regex_validator_password], widget=forms.PasswordInput(attrs={
+        "class": "form-control border border-secondary mb-2",
+        "placeholder": "Old password"
+    }))
     field_order = ["old_password", "password"]
 
     class Meta:
