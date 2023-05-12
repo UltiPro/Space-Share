@@ -35,7 +35,7 @@
                     <div class="content-holder">
                         <div class="post-content mb-3">
                             <h1>{{ post.title }}</h1>
-                            <p>{{ post.content|safe|linebreaks }}</p>
+                            <p><span>&emsp;</span>{{ post.content|safe|linebreaksbr }}</p>
                             <p class="text-end fw-bold">{{ post.date }}</p>
                         </div>
                     </div>
