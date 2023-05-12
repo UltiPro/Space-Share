@@ -1,9 +1,9 @@
-const textarea = document.querySelector('textarea');
+const textarea = document.querySelector("textarea");
 
 textarea.textContent = textarea.textContent.replaceAll("&emsp;", "    ");
 
-textarea.addEventListener('keydown', function (e) {
-    if (e.key == 'Tab') {
+textarea.addEventListener("keydown", function (e) {
+    if (e.key == "Tab") {
         e.preventDefault();
         const start = this.selectionStart;
         const end = this.selectionEnd;
