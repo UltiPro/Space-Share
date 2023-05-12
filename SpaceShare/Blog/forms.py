@@ -135,6 +135,7 @@ class CommentForm(forms.ModelForm):
         comment = super().save(commit=False)
         comment.user = UserModel.objects.get(nickname=user)
         comment.post = PostModel.objects.get(slug=post)
+        comment.content = comment.content.replace("    ", "&emsp;")
         if commit:
             comment.save()
         return comment
@@ -281,3 +282,10 @@ class ChangeDescriptionForm(forms.ModelForm):
                 "max_length": ("Description should be maximum 2000 characters long.")
             }
         }
+
+    def save(self, commit=True):
+        content = super().save(commit=False)
+        content.description = content.description.replace("    ", "&emsp;")
+        if commit:
+            content.save()
+        return content
