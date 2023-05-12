@@ -99,7 +99,7 @@
                                     <div class="card w-100 {% if comment == comments.last %} mb-0 {% else %} mb-3 {% endif %} shadow">
                                         <div class="card-body text-secondary fw-bold m-0 pb-0">
                                             <div class="row">
-                                                <div class="col-10">{{ comment.content|linebreaks }}</div>
+                                                <div class="col-10">{{ comment.content|safe|linebreaksbr }}</div>
                                                     <div class="col-2 pb-2">
                                                         <a href="{% url 'user' comment.user.slug %}">
                                                             <img src="{{ comment.user.image.url }}" alt="User's image" class="img-fluid border border-secondary rounded">
@@ -127,5 +127,6 @@
 
 {% block doc_js %}
     <script src="{% static 'Blog/js/modal_image.js' %}"></script>
+    <script src="{% static 'Blog/js/textarea_tabs.js' %}"></script>
     <script src="{% static 'Blog/js/post.js' %}"></script>
 {% endblock %}
