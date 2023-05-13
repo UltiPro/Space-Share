@@ -22,6 +22,13 @@ class AuthorAdmin(admin.ModelAdmin):
         "slug": ("name", "surname")
     }
 
+    class Media:
+        js = ("Blog/js/textarea_tabs.js",)
+
+    def save_model(self, request, obj, form, change):
+        obj.description = obj.description.replace("    ", "&emsp;")
+        return super().save_model(request, obj, form, change)
+
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ("__str__", "email")
@@ -30,6 +37,13 @@ class UserAdmin(admin.ModelAdmin):
     prepopulated_fields = {
         "slug": ("nickname",)
     }
+
+    class Media:
+        js = ("Blog/js/textarea_tabs.js",)
+
+    def save_model(self, request, obj, form, change):
+        obj.description = obj.description.replace("    ", "&emsp;")
+        return super().save_model(request, obj, form, change)
 
     def has_add_permission(self, request):
         return False
@@ -40,6 +54,13 @@ class CommentAdmin(admin.ModelAdmin):
     list_filter = ("date", )
     search_fields = ("user", "post")
     readonly_fields = ("post", "user")
+
+    class Media:
+        js = ("Blog/js/textarea_tabs.js",)
+
+    def save_model(self, request, obj, form, change):
+        obj.content = obj.content.replace("    ", "&emsp;")
+        return super().save_model(request, obj, form, change)
 
     def has_add_permission(self, request):
         return False
@@ -52,6 +73,13 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {
         "slug": ("title",)
     }
+
+    class Media:
+        js = ("Blog/js/textarea_tabs.js",)
+
+    def save_model(self, request, obj, form, change):
+        obj.content = obj.content.replace("    ", "&emsp;")
+        return super().save_model(request, obj, form, change)
 
 
 admin.site.register(Newsletter, NewsletterAdmin)
