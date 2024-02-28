@@ -1,10 +1,8 @@
 from django.test import TestCase, SimpleTestCase, Client
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse, resolve
-from django.contrib.auth.hashers import check_password
 
 from .models import Newsletter as NewsletterModel, Author as AuthorModel, Tag as TagModel, Post as PostModel, User as UserModel, Comment as CommentModel
-from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm, ChangeEmailForm, ChangePasswordForm, ChangeImageForm, DeleteAccountForm, ChangeDescriptionForm
+from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm, ChangeEmailForm, ChangePasswordForm
 from .views import Index as IndexView, Posts as PostsView, PostsBySearch as PostsBySearchView, PostsByTag as PostsByTagView, Post as PostView, Authors as AuthorsView, Author as AuthorView, AuthorPosts as AuthorPostsView, AuthorPostsByTag as AuthorPostsByTagView, About as AboutView, Register as RegisterView, Login as LoginView, Logout as LogoutView, Settings as SettingsView, User as UserView
 
 
@@ -77,7 +75,7 @@ class TestForms(TestCase):
         self.client = Client()
         self.user = UserModel.objects.create(
             login="test",
-            password="Test123456!",
+            password="pbkdf2_sha256$390000$HJYDMzo8KCbbr0af49GcQu$lgA5Ocdb7pa2CA2WkP+r4g1JCYCYkCf97dvXbzWf+jM=",
             nickname="Test",
             email="test@test.com"
         )
@@ -101,9 +99,9 @@ class TestForms(TestCase):
 
     def test_newsletter_form_valid(self):
         form = NewsletterForm(data={
-            'name': "Testname",
-            'surname': "Testsurname",
-            'email': "test@test.com"
+            "name": "Testname",
+            "surname": "Testsurname",
+            "email": "test@test.com"
         })
         self.assertTrue(form.is_valid())
         self.assertTrue(form.send_email())
@@ -112,19 +110,19 @@ class TestForms(TestCase):
 
     def test_newsletter_form_invalid(self):
         form = NewsletterForm(data={
-            'name': "",
-            'surname': "",
-            'email': "test@test."
+            "name": "",
+            "surname": "",
+            "email": "test@test."
         })
         self.assertFalse(form.is_valid())
         self.assertEquals(len(form.errors), 3)
 
     def test_user_registration_form_valid(self):
         form = UserRegisterForm(data={
-            'login': 'Test2',
-            'password': "Test1234!",
-            'c_password': "Test1234!",
-            'nickname': "Test2",
+            "login": "Test2",
+            "password": "Test1234!",
+            "c_password": "Test1234!",
+            "nickname": "Test2",
             "email": "test2@test.com"
         })
         self.assertTrue(form.is_valid())
@@ -133,10 +131,10 @@ class TestForms(TestCase):
 
     def test_user_registration_form_invalid(self):
         form = UserRegisterForm(data={
-            'login': '',
-            'password': "Test123",
-            'c_password': "Test1234",
-            'nickname': "",
+            "login": "",
+            "password": "Test123",
+            "c_password": "Test1234",
+            "nickname": "",
             "email": "test@test."
         })
         self.assertFalse(form.is_valid())
@@ -144,15 +142,15 @@ class TestForms(TestCase):
 
     def test_user_login_form_valid(self):
         form = UserLoginForm(data={
-            'login': 'Test',
-            'password': "Test1234!"
+            "login": "Test",
+            "password": "Test1234!"
         })
         self.assertTrue(form.is_valid())
 
     def test_user_login_form_invalid(self):
         form = UserLoginForm(data={
-            'login': '',
-            'password': "Test1234"
+            "login": "",
+            "password": "Test1234"
         })
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 2)
@@ -190,6 +188,13 @@ class TestForms(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 1)
 
+    def test_change_password_form_valid(self):
+        form = ChangePasswordForm(data={
+            "old_password": "Qwerty123456!",
+            "password": "Test123456!"
+        }, instance=self.user)
+        self.assertTrue(form.is_valid())
+
     def test_change_password_form_invalid(self):
         form = ChangePasswordForm(data={
             "old_password": self.user.password,
@@ -213,11 +218,11 @@ class TestUrls(SimpleTestCase):
         self.assertEquals(resolve(url).func.view_class, PostsBySearchView)
 
     def test_posts_by_tag(self):
-        url = reverse("posts_by_tag", args=['slug'])
+        url = reverse("posts_by_tag", args=["slug"])
         self.assertEquals(resolve(url).func.view_class, PostsByTagView)
 
     def test_post(self):
-        url = reverse("post", args=['slug'])
+        url = reverse("post", args=["slug"])
         self.assertEquals(resolve(url).func.view_class, PostView)
 
     def test_authors(self):
@@ -225,15 +230,15 @@ class TestUrls(SimpleTestCase):
         self.assertEquals(resolve(url).func.view_class, AuthorsView)
 
     def test_author(self):
-        url = reverse("author", args=['slug'])
+        url = reverse("author", args=["slug"])
         self.assertEquals(resolve(url).func.view_class, AuthorView)
 
     def test_author_posts(self):
-        url = reverse("author_posts", args=['slug'])
+        url = reverse("author_posts", args=["slug"])
         self.assertEquals(resolve(url).func.view_class, AuthorPostsView)
 
     def test_author_posts_by_tag(self):
-        url = reverse("author_posts_by_tag", args=['slug', 'str'])
+        url = reverse("author_posts_by_tag", args=["slug", "str"])
         self.assertEquals(resolve(url).func.view_class, AuthorPostsByTagView)
 
     def test_about_us(self):
@@ -257,7 +262,7 @@ class TestUrls(SimpleTestCase):
         self.assertEquals(resolve(url).func.view_class, SettingsView)
 
     def test_user(self):
-        url = reverse("user", args=['slug'])
+        url = reverse("user", args=["slug"])
         self.assertEquals(resolve(url).func.view_class, UserView)
 
 
@@ -361,14 +366,6 @@ class TestViews(TestCase):
         response = self.client.get(reverse("post", args=[self.post.slug]))
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "Blog/post.html")
-
-    '''def test_post_post(self):
-        response = self.client.post(reverse("post", args=[self.post.slug]), {
-            "content": "Test text for post method"
-        })
-        self.assertEquals(response.status_code, 200)
-        self.assertTrue(CommentModel.objects.get(
-            content="Test text for post method"))'''
 
     def test_authors_get(self):
         response = self.client.get(reverse("authors"))
