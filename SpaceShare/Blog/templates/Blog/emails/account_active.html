@@ -1,4 +1,145 @@
-{% autoescape off %}   
-Copy and paste link to confirm your registration,  
-http://{{ domain }}{% url 'activate' uidb64=uid token=token %}  
-{% endautoescape %}  
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>SpaceShare Newsletter</title>
+		<style>
+			html {
+				height: 100%;
+				background: radial-gradient(
+					ellipse at bottom,
+					#1b2735 0%,
+					#090a0f 100%
+				);
+				overflow: hidden;
+				text-align: center;
+			}
+			#stars1 {
+				width: 2px;
+				height: 2px;
+				background: transparent;
+				box-shadow: 893px 268px #fff, 1819px 666px #fff, 1736px 1062px #fff,
+					1124px 45px #fff, 1570px 711px #fff, 147px 1032px #fff,
+					202px 724px #fff, 1860px 812px #fff, 1648px 620px #fff,
+					731px 778px #fff, 91px 1185px #fff, 829px 1003px #fff,
+					1464px 484px #fff, 959px 573px #fff, 906px 356px #fff,
+					970px 499px #fff, 626px 890px #fff, 1344px 1070px #fff,
+					1351px 544px #fff, 708px 68px #fff, 1870px 130px #fff,
+					1432px 618px #fff, 769px 673px #fff, 1198px 198px #fff,
+					399px 133px #fff, 904px 194px #fff, 787px 916px #fff, 752px 524px #fff,
+					1052px 1163px #fff, 786px 519px #fff, 1440px 500px #fff,
+					1691px 429px #fff, 736px 459px #fff, 1136px 510px #fff,
+					1317px 10px #fff, 54px 469px #fff, 960px 23px #fff, 112px 941px #fff,
+					265px 129px #fff, 1045px 432px #fff, 1420px 559px #fff,
+					1708px 103px #fff, 1175px 943px #fff, 318px 560px #fff,
+					1095px 892px #fff, 1197px 955px #fff, 1482px 873px #fff,
+					1912px 300px #fff, 507px 192px #fff, 689px 120px #fff,
+					769px 273px #fff, 1039px 976px #fff, 519px 45px #fff, 1694px 31px #fff,
+					1859px 52px #fff, 1368px 268px #fff, 940px 1003px #fff,
+					167px 942px #fff, 1641px 647px #fff, 1051px 654px #fff,
+					554px 511px #fff, 140px 668px #fff, 252px 101px #fff, 595px 853px #fff,
+					223px 839px #fff, 239px 699px #fff, 1547px 356px #fff,
+					430px 298px #fff, 1305px 134px #fff, 156px 91px #fff,
+					1712px 264px #fff, 1256px 991px #fff, 1718px 666px #fff,
+					1090px 543px #fff, 801px 323px #fff, 1117px 549px #fff,
+					1144px 347px #fff, 1640px 271px #fff, 838px 488px #fff,
+					306px 460px #fff, 1666px 635px #fff, 1572px 633px #fff,
+					1797px 1076px #fff, 474px 871px #fff, 1301px 868px #fff,
+					1632px 454px #fff, 1611px 466px #fff, 796px 269px #fff,
+					502px 12px #fff, 1536px 974px #fff, 956px 656px #fff, 107px 701px #fff,
+					965px 491px #fff, 1646px 247px #fff, 1515px 921px #fff,
+					1813px 519px #fff, 697px 143px #fff, 534px 340px #fff,
+					1590px 284px #fff, 1464px 528px #fff, 656px 480px #fff,
+					833px 705px #fff, 1567px 109px #fff, 1055px 330px #fff,
+					355px 1024px #fff, 1894px 218px #fff, 367px 42px #fff,
+					100px 690px #fff, 1831px 458px #fff, 814px 1013px #fff;
+				animation: animStar 38s linear infinite;
+			}
+			#stars2 {
+				width: 3px;
+				height: 3px;
+				background: transparent;
+				box-shadow: 1899px 52px #fff, 157px 88px #fff, 720px 427px #fff,
+					677px 960px #fff, 1265px 1181px #fff, 1176px 1361px #fff,
+					1674px 1355px #fff, 1038px 898px #fff, 1229px 365px #fff,
+					1085px 51px #fff, 851px 650px #fff, 385px 21px #fff, 41px 1153px #fff,
+					718px 70px #fff, 1321px 579px #fff, 497px 1458px #fff,
+					776px 1187px #fff, 1345px 31px #fff, 1571px 400px #fff,
+					339px 587px #fff, 146px 750px #fff, 64px 61px #fff, 307px 981px #fff,
+					388px 849px #fff, 1398px 936px #fff, 522px 765px #fff,
+					1146px 350px #fff, 19px 206px #fff, 1767px 319px #fff,
+					1203px 425px #fff, 1917px 1018px #fff, 898px 697px #fff,
+					1006px 931px #fff, 1596px 1057px #fff, 1298px 543px #fff,
+					1505px 996px #fff, 913px 1047px #fff, 1046px 945px #fff,
+					1293px 671px #fff, 668px 904px #fff, 133px 766px #fff,
+					318px 694px #fff, 1359px 354px #fff, 458px 911px #fff,
+					1387px 806px #fff, 523px 81px #fff, 1243px 341px #fff,
+					1629px 474px #fff, 1690px 419px #fff, 847px 808px #fff,
+					480px 718px #fff, 537px 593px #fff, 725px 1231px #fff,
+					1749px 1432px #fff, 1948px 303px #fff, 1889px 252px #fff,
+					1114px 1400px #fff, 759px 646px #fff, 222px 571px #fff,
+					1908px 1401px #fff, 1856px 1204px #fff, 338px 1645px #fff,
+					1528px 1050px #fff;
+				animation: animStar 76s linear infinite;
+			}
+			@keyframes animStar {
+				0% {
+					transform: translateY(0px);
+				}
+				50% {
+					transform: translateY(-480px);
+				}
+				100% {
+					transform: translateY(0px);
+				}
+			}
+			.container {
+				position: absolute;
+				top: 40%;
+				left: 50%;
+				width: 700px;
+				transform: translate(-50%, -50%);
+				background: whitesmoke;
+				padding: 10px 25px 45px 25px;
+				border-radius: 15px;
+				border: 5px solid white;
+			}
+			@media only screen and (max-width: 768px) {
+				.container {
+					width: 80%;
+				}
+			}
+			hr {
+				border: 1px solid royalblue;
+			}
+			.brand {
+				background: -webkit-linear-gradient(to top, #4cc9f0, #f72585);
+				background: linear-gradient(to top, #4cc9f0, #f72585);
+				-webkit-background-clip: text;
+				background-clip: text;
+				color: transparent;
+				text-align: center;
+			}
+			.info {
+				color: royalblue;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="stars1"></div>
+		<div id="stars2"></div>
+		<div class="container">
+			<h1 class="brand">SpaceShare</h1>
+			<hr />
+			<h3>
+				{% autoescape off %} 
+                Copy and paste link to confirm your registration,
+				http://{{ domain }}{% url 'activate' uidb64=uid token=token %} 
+                {% endautoescape %}
+			</h3>
+			<div class="info">
+				Please do not reply to this email, it is generated automatically.
+			</div>
+		</div>
+	</body>
+</html>

@@ -6,10 +6,10 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
 
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 import six
@@ -242,8 +242,7 @@ class Register(CreateView):
             user.is_active = False
             user.save()
             current_site = get_current_site(request)
-            mail_subject = "Activation link has been sent to your email."
-            message = render_to_string(
+            html_mail = render_to_string(
                 "Blog/emails/account_active.html",
                 {
                     "domain": current_site.domain,
@@ -251,9 +250,14 @@ class Register(CreateView):
                     "token": account_activation_token.make_token(user),
                 },
             )
-            to_email = form.cleaned_data.get("email")
-            email = EmailMessage(mail_subject, message, to=[to_email])
-            email.send()
+            send_mail(
+                "SpaceShare - Account activation link.",
+                "Activate your account at SpaceShare!",
+                "accounts@spaceshare.com",
+                [form.cleaned_data.get("email")],
+                fail_silently=True,
+                html_message=html_mail,
+            )
             return render(request, "Blog/register_success.html")
         return super().post(request, *args, **kwargs)
 
