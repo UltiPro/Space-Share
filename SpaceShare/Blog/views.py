@@ -5,9 +5,45 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
 
-from .models import Post as PostModel, Comment as CommentModel, Tag as TagModel, Author as AuthorModel, User as UserModel
-from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm, ChangeEmailForm, ChangePasswordForm, ChangeImageForm, DeleteAccountForm, ChangeDescriptionForm
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+import six
+
+
+class TokenGenerator(PasswordResetTokenGenerator):
+    def _make_hash_value(self, user, timestamp):
+        return (
+            six.text_type(user.pk)
+            + six.text_type(timestamp)
+            + six.text_type(user.is_active)
+        )
+
+
+account_activation_token = TokenGenerator()
+
+from .models import (
+    Post as PostModel,
+    Comment as CommentModel,
+    Tag as TagModel,
+    Author as AuthorModel,
+    User as UserModel,
+)
+from .forms import (
+    NewsletterForm,
+    UserRegisterForm,
+    UserLoginForm,
+    CommentForm,
+    ChangeEmailForm,
+    ChangePasswordForm,
+    ChangeImageForm,
+    DeleteAccountForm,
+    ChangeDescriptionForm,
+)
 
 
 class Index(FormView):
@@ -71,8 +107,9 @@ class PostsByTag(Posts):
         context = super().get_context_data(*args, **kwargs)
         context["title"] = f'{self.kwargs["str"]} Posts'
         tag = get_object_or_404(TagModel, tag=self.kwargs["str"])
-        context["posts"] = PostModel.objects.all().order_by(
-            "-date").filter(tags__tag=tag)
+        context["posts"] = (
+            PostModel.objects.all().order_by("-date").filter(tags__tag=tag)
+        )
         context["active_tag"] = self.kwargs["str"]
         return context
 
@@ -90,12 +127,25 @@ class PostsBySearch(ListView):
 
     def get_queryset(self):
         if not self.request.GET["search"]:
-            return super().get_queryset().filter(title__icontains="Space").order_by("-date")
-        return super().get_queryset().filter(Q(title__icontains=self.request.GET["search"]) | Q(content__icontains=self.request.GET["search"])).order_by("-date")
+            return (
+                super()
+                .get_queryset()
+                .filter(title__icontains="Space")
+                .order_by("-date")
+            )
+        return (
+            super()
+            .get_queryset()
+            .filter(
+                Q(title__icontains=self.request.GET["search"])
+                | Q(content__icontains=self.request.GET["search"])
+            )
+            .order_by("-date")
+        )
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        if (not self.request.GET["search"]):
+        if not self.request.GET["search"]:
             context["search"] = "Space"
         else:
             context["search"] = f'{self.request.GET["search"]}'
@@ -109,16 +159,18 @@ class Post(FormView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context["post"] = PostModel.objects.get(slug=self.kwargs["slug"])
-        context["comments"] = CommentModel.objects.all().filter(
-            post=PostModel.objects.get(slug=self.kwargs["slug"])).order_by("-date")
+        context["comments"] = (
+            CommentModel.objects.all()
+            .filter(post=PostModel.objects.get(slug=self.kwargs["slug"]))
+            .order_by("-date")
+        )
         return context
 
     def form_valid(self, form):
         if not self.request.session.get("nickname"):
             return redirect("/logout")
         else:
-            form.save(self.request.session.get(
-                "nickname"), self.kwargs["slug"])
+            form.save(self.request.session.get("nickname"), self.kwargs["slug"])
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -146,7 +198,12 @@ class AuthorPosts(ListView):
     context_object_name = "posts"
 
     def get_queryset(self):
-        return super().get_queryset().filter(author=AuthorModel.objects.get(slug=self.kwargs["slug"])).order_by("-date")
+        return (
+            super()
+            .get_queryset()
+            .filter(author=AuthorModel.objects.get(slug=self.kwargs["slug"]))
+            .order_by("-date")
+        )
 
     def get_context_data(self, *args, **kwargs):
         author = AuthorModel.objects.get(slug=self.kwargs["slug"])
@@ -177,14 +234,46 @@ class Register(CreateView):
     template_name = "Blog/register.html"
     model = UserModel
     form_class = UserRegisterForm
-    success_url = "/login"
 
     def post(self, request, *args, **kwargs):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
+            current_site = get_current_site(request)
+            mail_subject = "Activation link has been sent to your email."
+            message = render_to_string(
+                "Blog/emails/account_active.html",
+                {
+                    "domain": current_site.domain,
+                    "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                    "token": account_activation_token.make_token(user),
+                },
+            )
+            to_email = form.cleaned_data.get("email")
+            email = EmailMessage(mail_subject, message, to=[to_email])
+            email.send()
             return render(request, "Blog/register_success.html")
         return super().post(request, *args, **kwargs)
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = UserModel.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        return render(
+            request, "Blog/login.html", {"form": UserLoginForm(), "success": True}
+        )
+    else:
+        return render(
+            request, "Blog/login.html", {"form": UserLoginForm(), "active_error": True}
+        )
 
 
 class Login(FormView):
@@ -199,11 +288,19 @@ class Login(FormView):
                 user = UserModel.objects.get(login=form["login"].value())
             except UserModel.DoesNotExist:
                 user = None
-            if user != None and check_password(form["password"].value(), user.password):
+            if (
+                user != None
+                and check_password(form["password"].value(), user.password)
+                and user.is_active
+            ):
                 request.session["nickname"] = user.nickname
                 request.session["image"] = user.image.url
             else:
-                return render(request, self.template_name, {"form": form, "error": True})
+                return render(
+                    request,
+                    self.template_name,
+                    {"form": form, "error": True, "active": not user.is_active},
+                )
         else:
             return render(request, self.template_name, {"form": form, "error": False})
         return super().post(request, *args, **kwargs)
@@ -224,10 +321,14 @@ class Settings(TemplateView):
         context["form_changepassword"] = ChangePasswordForm()
         context["form_changeimage"] = ChangeImageForm()
         context["form_deleteaccount"] = DeleteAccountForm()
-        context["form_changedescription"] = ChangeDescriptionForm(instance=UserModel.objects.get(
-            nickname=self.request.session.get("nickname")))
+        context["form_changedescription"] = ChangeDescriptionForm(
+            instance=UserModel.objects.get(
+                nickname=self.request.session.get("nickname")
+            )
+        )
         context["user_slug"] = UserModel.objects.get(
-            nickname=self.request.session.get("nickname")).slug
+            nickname=self.request.session.get("nickname")
+        ).slug
         return context
 
     def get(self, request, *args, **kwargs):
@@ -250,8 +351,12 @@ class Settings(TemplateView):
             return self.change_description(request)
 
     def change_email(self, request):
-        form = ChangeEmailForm(request.POST, instance=UserModel.objects.get(
-            nickname=self.request.session.get("nickname")))
+        form = ChangeEmailForm(
+            request.POST,
+            instance=UserModel.objects.get(
+                nickname=self.request.session.get("nickname")
+            ),
+        )
         if form.is_valid():
             form.save()
             return self.render_settings(request, email=form, email_success=True)
@@ -259,8 +364,12 @@ class Settings(TemplateView):
             return self.render_settings(request, email=form)
 
     def change_password(self, request):
-        form = ChangePasswordForm(request.POST, instance=UserModel.objects.get(
-            nickname=self.request.session.get("nickname")))
+        form = ChangePasswordForm(
+            request.POST,
+            instance=UserModel.objects.get(
+                nickname=self.request.session.get("nickname")
+            ),
+        )
         if form.is_valid():
             form.save()
             return self.render_settings(request, password=form, password_success=True)
@@ -268,8 +377,13 @@ class Settings(TemplateView):
             return self.render_settings(request, password=form)
 
     def change_image(self, request):
-        form = ChangeImageForm(request.POST, request.FILES, instance=UserModel.objects.get(
-            nickname=self.request.session.get("nickname")))
+        form = ChangeImageForm(
+            request.POST,
+            request.FILES,
+            instance=UserModel.objects.get(
+                nickname=self.request.session.get("nickname")
+            ),
+        )
         if form.is_valid():
             form.save()
             request.session["image"] = form.instance.image.url
@@ -278,8 +392,12 @@ class Settings(TemplateView):
             return self.render_settings(request, image=form)
 
     def delete_account(self, request):
-        form = DeleteAccountForm(request.POST, instance=UserModel.objects.get(
-            nickname=self.request.session.get("nickname")))
+        form = DeleteAccountForm(
+            request.POST,
+            instance=UserModel.objects.get(
+                nickname=self.request.session.get("nickname")
+            ),
+        )
         if form.is_valid():
             form.save()
             return redirect("/logout")
@@ -287,27 +405,51 @@ class Settings(TemplateView):
             return self.render_settings(request, delete=form)
 
     def change_description(self, request):
-        form = ChangeDescriptionForm(request.POST, instance=UserModel.objects.get(
-            nickname=self.request.session.get("nickname")))
+        form = ChangeDescriptionForm(
+            request.POST,
+            instance=UserModel.objects.get(
+                nickname=self.request.session.get("nickname")
+            ),
+        )
         if form.is_valid():
             form.save()
-            return self.render_settings(request, description=form, description_success=True)
+            return self.render_settings(
+                request, description=form, description_success=True
+            )
         else:
             return self.render_settings(request, description=form)
 
-    def render_settings(self, request, email=ChangeEmailForm(), email_success=False, password=ChangePasswordForm(), password_success=False, image=ChangeImageForm(), image_success=False, delete=DeleteAccountForm(), description=ChangeDescriptionForm(), description_success=False):
-        return render(request, self.template_name, {
-            "form_changeemail": email,
-            "form_changeemail_success": email_success,
-            "form_changepassword": password,
-            "form_changepassword_success": password_success,
-            "form_changeimage": image,
-            "form_changeimage_success": image_success,
-            "form_deleteaccount": delete,
-            "form_changedescription": description,
-            "form_changedescription_success": description_success,
-            "user_slug": UserModel.objects.get(nickname=self.request.session.get("nickname")).slug
-        })
+    def render_settings(
+        self,
+        request,
+        email=ChangeEmailForm(),
+        email_success=False,
+        password=ChangePasswordForm(),
+        password_success=False,
+        image=ChangeImageForm(),
+        image_success=False,
+        delete=DeleteAccountForm(),
+        description=ChangeDescriptionForm(),
+        description_success=False,
+    ):
+        return render(
+            request,
+            self.template_name,
+            {
+                "form_changeemail": email,
+                "form_changeemail_success": email_success,
+                "form_changepassword": password,
+                "form_changepassword_success": password_success,
+                "form_changeimage": image,
+                "form_changeimage_success": image_success,
+                "form_deleteaccount": delete,
+                "form_changedescription": description,
+                "form_changedescription_success": description_success,
+                "user_slug": UserModel.objects.get(
+                    nickname=self.request.session.get("nickname")
+                ).slug,
+            },
+        )
 
 
 class User(DetailView):

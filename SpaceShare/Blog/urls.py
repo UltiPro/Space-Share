@@ -14,6 +14,7 @@ urlpatterns = [
     path("author/<slug:slug>/posts/<str:str>", views.AuthorPostsByTag.as_view(), name="author_posts_by_tag"),
     path("about-us", views.About.as_view(), name="about_us"),
     path("register", views.Register.as_view(), name="register"),
+    path("activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/", views.activate, name="activate"),
     path("login", views.Login.as_view(), name="login"),
     path("logout", views.Logout, name="logout"),
     path("settings", views.Settings.as_view(), name="settings"),
