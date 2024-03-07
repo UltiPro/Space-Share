@@ -41,4 +41,34 @@ Installation:
 
 ![Page preview](/screenshots/Page3.png)
 
-![Page preview](/screenshots/Mail1.png)
+![Newsletter email preview](/screenshots/Mail1.png)
+
+![Posts preview](/screenshots/Posts1.png)
+
+![Posts preview](/screenshots/Posts2.png)
+
+![Posts preview](/screenshots/Posts3.png)
+
+![Post preview](/screenshots/Post1.png)
+
+![Authors preview](/screenshots/Authors1.png)
+
+![Author preview](/screenshots/Author1.png)
+
+![Author preview](/screenshots/Author1.png)
+
+![About us preview](/screenshots/AboutUs1.png)
+
+![Register preview](/screenshots/Register1.png)
+
+register komunikat
+
+![Register email preview](/screenshots/Mail2.png)
+
+![Login preview](/screenshots/Login1.png)
+
+![Settings preview](/screenshots/Settings1.png)
+
+![Profile preview](/screenshots/Profile1.png)
+
+admin eee
