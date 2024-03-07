@@ -1,43 +1,65 @@
 from django.test import TestCase, SimpleTestCase, Client
 from django.urls import reverse, resolve
 
-from .models import Newsletter as NewsletterModel, Author as AuthorModel, Tag as TagModel, Post as PostModel, User as UserModel, Comment as CommentModel
-from .forms import NewsletterForm, UserRegisterForm, UserLoginForm, CommentForm, ChangeEmailForm, ChangePasswordForm
-from .views import Index as IndexView, Posts as PostsView, PostsBySearch as PostsBySearchView, PostsByTag as PostsByTagView, Post as PostView, Authors as AuthorsView, Author as AuthorView, AuthorPosts as AuthorPostsView, AuthorPostsByTag as AuthorPostsByTagView, About as AboutView, Register as RegisterView, Login as LoginView, Logout as LogoutView, Settings as SettingsView, User as UserView
+from .models import (
+    Newsletter as NewsletterModel,
+    Author as AuthorModel,
+    Tag as TagModel,
+    Post as PostModel,
+    User as UserModel,
+    Comment as CommentModel,
+)
+from .forms import (
+    NewsletterForm,
+    UserRegisterForm,
+    UserLoginForm,
+    CommentForm,
+    ChangeEmailForm,
+    ChangePasswordForm,
+)
+from .views import (
+    Index as IndexView,
+    Posts as PostsView,
+    PostsBySearch as PostsBySearchView,
+    PostsByTag as PostsByTagView,
+    Post as PostView,
+    Authors as AuthorsView,
+    Author as AuthorView,
+    AuthorPosts as AuthorPostsView,
+    AuthorPostsByTag as AuthorPostsByTagView,
+    About as AboutView,
+    Register as RegisterView,
+    Login as LoginView,
+    Logout as LogoutView,
+    Settings as SettingsView,
+    User as UserView,
+)
 
 
 class TestModels(TestCase):
     def setUp(self):
         self.newsletter = NewsletterModel.objects.create(
-            name="Testname",
-            surname="Testsurname",
-            email="test@test.com"
+            name="Testname", surname="Testsurname", email="test@test.com"
         )
         self.author = AuthorModel.objects.create(
-            name="Testname",
-            surname="Testsurname",
-            email="test@test.com"
+            name="Testname", surname="Testsurname", email="test@test.com"
         )
-        self.tag = TagModel.objects.create(
-            tag="Space"
-        )
+        self.tag = TagModel.objects.create(tag="Space")
         self.post = PostModel.objects.create(
             title="Test title",
             author=self.author,
             content="Content test for post by any author",
-            image="users/default.png"
+            image="users/default.png",
         )
         self.post.tags.add(self.tag)
         self.user = UserModel.objects.create(
             login="test",
             password="login123456!",
             nickname="Test",
-            email="Test@test.com"
+            email="Test@test.com",
         )
         self.comment = CommentModel.objects.create(
-            post=self.post,
-            user=self.user,
-            content="Test content"
+            post=self.post, user=self.user, content="Test content"
         )
         return super().setUp()
 
@@ -56,8 +78,7 @@ class TestModels(TestCase):
 
     def test_post(self):
         self.assertEqual(PostModel.objects.all().count(), 1)
-        self.assertEquals(self.post.__str__(),
-                          "Test title by Testname Testsurname")
+        self.assertEquals(self.post.__str__(), "Test title by Testname Testsurname")
         self.assertEquals(self.post.slug, "test-title")
 
     def test_user(self):
@@ -77,129 +98,118 @@ class TestForms(TestCase):
             login="test",
             password="pbkdf2_sha256$390000$HJYDMzo8KCbbr0af49GcQu$lgA5Ocdb7pa2CA2WkP+r4g1JCYCYkCf97dvXbzWf+jM=",
             nickname="Test",
-            email="test@test.com"
+            email="test@test.com",
         )
         self.author = AuthorModel.objects.create(
-            name="Testname",
-            surname="Testsurname",
-            email="test@test.com"
+            name="Testname", surname="Testsurname", email="test@test.com"
         )
         self.post = PostModel.objects.create(
             title="Test title",
             author=self.author,
             content="Content test for post by any author",
-            image="users/default.png"
+            image="users/default.png",
         )
         self.session = self.client.session
-        self.session.update({
-            "nickname": "Test"
-        })
+        self.session.update({"nickname": "Test"})
         self.session.save()
         return super().setUp()
 
     def test_newsletter_form_valid(self):
-        form = NewsletterForm(data={
-            "name": "Testname",
-            "surname": "Testsurname",
-            "email": "test@test.com"
-        })
+        form = NewsletterForm(
+            data={
+                "name": "Testname",
+                "surname": "Testsurname",
+                "email": "test@test.com",
+            }
+        )
         self.assertTrue(form.is_valid())
         self.assertTrue(form.send_email())
         form.save()
         self.assertEqual(NewsletterModel.objects.all().count(), 1)
 
     def test_newsletter_form_invalid(self):
-        form = NewsletterForm(data={
-            "name": "",
-            "surname": "",
-            "email": "test@test."
-        })
+        form = NewsletterForm(data={"name": "", "surname": "", "email": "test@test."})
         self.assertFalse(form.is_valid())
         self.assertEquals(len(form.errors), 3)
 
     def test_user_registration_form_valid(self):
-        form = UserRegisterForm(data={
-            "login": "Test2",
-            "password": "Test1234!",
-            "c_password": "Test1234!",
-            "nickname": "Test2",
-            "email": "test2@test.com"
-        })
+        form = UserRegisterForm(
+            data={
+                "login": "Test2",
+                "password": "Test1234!",
+                "c_password": "Test1234!",
+                "nickname": "Test2",
+                "email": "test2@test.com",
+            }
+        )
         self.assertTrue(form.is_valid())
         form.save()
         self.assertEqual(UserModel.objects.all().count(), 2)
 
     def test_user_registration_form_invalid(self):
-        form = UserRegisterForm(data={
-            "login": "",
-            "password": "Test123",
-            "c_password": "Test1234",
-            "nickname": "",
-            "email": "test@test."
-        })
+        form = UserRegisterForm(
+            data={
+                "login": "",
+                "password": "Test123",
+                "c_password": "Test1234",
+                "nickname": "",
+                "email": "test@test.",
+            }
+        )
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 5)
 
     def test_user_login_form_valid(self):
-        form = UserLoginForm(data={
-            "login": "Test",
-            "password": "Test1234!"
-        })
+        form = UserLoginForm(data={"login": "Test", "password": "Test1234!"})
         self.assertTrue(form.is_valid())
 
     def test_user_login_form_invalid(self):
-        form = UserLoginForm(data={
-            "login": "",
-            "password": "Test1234"
-        })
+        form = UserLoginForm(data={"login": "", "password": "Test1234"})
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 2)
 
     def test_comment_form_valid(self):
-        form = CommentForm(data={
-            "content": "Test comment for any post"
-        })
+        form = CommentForm(data={"content": "Test comment for any post"})
         self.assertTrue(form.is_valid())
         form.save(self.user.nickname, self.post.slug)
         self.assertEqual(CommentModel.objects.all().count(), 1)
 
     def test_comment_form_invalid(self):
-        form = CommentForm(data={
-            "content": ""
-        })
+        form = CommentForm(data={"content": ""})
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 1)
 
     def test_change_email_form_valid(self):
-        form = ChangeEmailForm(data={
-            "old_email": self.user.email,
-            "email": "test3@test.com"
-        }, instance=self.user)
+        form = ChangeEmailForm(
+            data={"old_email": self.user.email, "email": "test3@test.com"},
+            instance=self.user,
+        )
         self.assertTrue(form.is_valid())
         form.save()
-        self.assertEquals(UserModel.objects.get(
-            nickname=self.user.nickname).email, "test3@test.com")
+        self.assertEquals(
+            UserModel.objects.get(nickname=self.user.nickname).email, "test3@test.com"
+        )
 
     def test_change_email_form_invalid(self):
-        form = ChangeEmailForm(data={
-            "old_email": self.user.email,
-            "email": "test@test.com"
-        }, instance=self.user)
+        form = ChangeEmailForm(
+            data={"old_email": self.user.email, "email": "test@test.com"},
+            instance=self.user,
+        )
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 1)
 
     def test_change_password_form_valid(self):
-        form = ChangePasswordForm(data={
-            "old_password": "Qwerty123456!",
-            "password": "Test123456!"
-        }, instance=self.user)
+        form = ChangePasswordForm(
+            data={"old_password": "Qwerty123456!", "password": "Test123456!"},
+            instance=self.user,
+        )
         self.assertTrue(form.is_valid())
 
     def test_change_password_form_invalid(self):
-        form = ChangePasswordForm(data={
-            "old_password": self.user.password,
-            "password": "Test123"
-        }, instance=self.user)
+        form = ChangePasswordForm(
+            data={"old_password": self.user.password, "password": "Test123"},
+            instance=self.user,
+        )
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 2)
 
@@ -270,31 +280,24 @@ class TestViews(TestCase):
     def setUp(self):
         self.client = Client()
         self.author = AuthorModel.objects.create(
-            name="Testname",
-            surname="Testsurname",
-            email="test@test.com"
+            name="Testname", surname="Testsurname", email="test@test.com"
         )
-        self.tag = TagModel.objects.create(
-            tag="Space"
-        )
+        self.tag = TagModel.objects.create(tag="Space")
         self.post = PostModel.objects.create(
             title="Test title",
             author=self.author,
             content="Content test for post by any author",
-            image="users/default.png"
+            image="users/default.png",
         )
         self.post.tags.add(self.tag)
         self.user = UserModel.objects.create(
             login="test",
             password="login123456!",
             nickname="Test",
-            email="Test@test.com"
+            email="Test@test.com",
         )
         session = self.client.session
-        session.update({
-            "nickname": "Test",
-            "image": "users/default.png"
-        })
+        session.update({"nickname": "Test", "image": "users/default.png"})
         session.save()
         return super().setUp()
 
@@ -304,11 +307,10 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, "Blog/index.html")
 
     def test_index_post(self):
-        response = self.client.post(reverse("index"), {
-            "name": "Testname",
-            "surname": "Testsurname",
-            "email": "test@test.com"
-        })
+        response = self.client.post(
+            reverse("index"),
+            {"name": "Testname", "surname": "Testsurname", "email": "test@test.com"},
+        )
         self.assertEquals(response.status_code, 200)
         self.assertTrue(NewsletterModel.objects.get(email="test@test.com"))
 
@@ -323,11 +325,10 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, "Blog/posts.html")
 
     def test_posts_post(self):
-        response = self.client.post(reverse("posts"), {
-            "name": "Testname",
-            "surname": "Testsurname",
-            "email": "test2@test.com"
-        })
+        response = self.client.post(
+            reverse("posts"),
+            {"name": "Testname", "surname": "Testsurname", "email": "test2@test.com"},
+        )
         self.assertEquals(response.status_code, 200)
         self.assertTrue(NewsletterModel.objects.get(email="test2@test.com"))
 
@@ -338,7 +339,8 @@ class TestViews(TestCase):
 
     def test_posts_by_search_get(self):
         response = self.client.get(
-            reverse("posts_by_search"), {"search": self.post.title})
+            reverse("posts_by_search"), {"search": self.post.title}
+        )
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "Blog/posts_search.html")
 
@@ -348,17 +350,15 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, "Blog/posts.html")
 
     def test_posts_by_tag_post(self):
-        response = self.client.post(reverse("posts_by_tag", args=[self.tag]), {
-            "name": "Testname",
-            "surname": "Testsurname",
-            "email": "test3@test.com"
-        })
+        response = self.client.post(
+            reverse("posts_by_tag", args=[self.tag]),
+            {"name": "Testname", "surname": "Testsurname", "email": "test3@test.com"},
+        )
         self.assertEquals(response.status_code, 200)
         self.assertTrue(NewsletterModel.objects.get(email="test3@test.com"))
 
     def test_posts_by_tag_post_empty(self):
-        response = self.client.post(
-            reverse("posts_by_tag", args=[self.tag]), {})
+        response = self.client.post(reverse("posts_by_tag", args=[self.tag]), {})
         self.assertEquals(response.status_code, 200)
         self.assertEqual(NewsletterModel.objects.all().count(), 0)
 
@@ -378,14 +378,14 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, "Blog/author.html")
 
     def test_author_posts_get(self):
-        response = self.client.get(
-            reverse("author_posts", args=[self.author.slug]))
+        response = self.client.get(reverse("author_posts", args=[self.author.slug]))
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "Blog/author_posts.html")
 
     def test_author_posts_by_tag_get(self):
         response = self.client.get(
-            reverse("author_posts_by_tag", args=[self.author.slug, self.tag.tag]))
+            reverse("author_posts_by_tag", args=[self.author.slug, self.tag.tag])
+        )
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "Blog/author_posts.html")
 

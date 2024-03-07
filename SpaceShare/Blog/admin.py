@@ -18,9 +18,7 @@ class NewsletterAdmin(admin.ModelAdmin):
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ("__str__", "email")
     search_fields = ("name", "surname")
-    prepopulated_fields = {
-        "slug": ("name", "surname")
-    }
+    prepopulated_fields = {"slug": ("name", "surname")}
 
     class Media:
         js = ("Blog/js/textarea_tabs.js",)
@@ -34,9 +32,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ("__str__", "email")
     search_fields = ("nickname", "email")
     readonly_fields = ("login", "password", "email")
-    prepopulated_fields = {
-        "slug": ("nickname",)
-    }
+    prepopulated_fields = {"slug": ("nickname",)}
 
     class Media:
         js = ("Blog/js/textarea_tabs.js",)
@@ -51,7 +47,7 @@ class UserAdmin(admin.ModelAdmin):
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ("user", "post", "date")
-    list_filter = ("date", )
+    list_filter = ("date",)
     search_fields = ("user", "post")
     readonly_fields = ("post", "user")
 
@@ -70,9 +66,7 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ("author", "title", "date")
     list_filter = ("author", "tags", "date")
     search_fields = ("author", "title")
-    prepopulated_fields = {
-        "slug": ("title",)
-    }
+    prepopulated_fields = {"slug": ("title",)}
 
     class Media:
         js = ("Blog/js/textarea_tabs.js",)

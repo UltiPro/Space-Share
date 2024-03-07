@@ -10,4 +10,4 @@ document.addEventListener("DOMContentLoaded", e => {
     modal_id.onclick = function () {
         modal_id.style.display = "none";
     }
-})
+});
