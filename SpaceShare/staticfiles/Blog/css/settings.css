@@ -1,0 +1,10 @@
+.bg-settings {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: -1;
+    min-width: 100vw;
+    min-height: 100vh;
+    background: rgb(33, 37, 41);
+    background: linear-gradient(90deg, rgba(33, 37, 41, 1) 0%, rgba(108, 117, 125, 1) 25%, rgba(108, 117, 125, 1) 50%, rgba(108, 117, 125, 1) 75%, rgba(33, 37, 41, 1) 100%);
+}
