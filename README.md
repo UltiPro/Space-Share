@@ -55,7 +55,7 @@ Installation:
 
 ![Author preview](/screenshots/Author1.png)
 
-![Author preview](/screenshots/Author1.png)
+![Author preview](/screenshots/Author2.png)
 
 ![About us preview](/screenshots/AboutUs1.png)
 
