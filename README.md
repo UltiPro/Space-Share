@@ -1,7 +1,7 @@
 # Space-Share
 Space Share created by Patryk 'UltiPro' Wójtowicz using Python Django and Bootstrap 5.
 
-opis
+The website allows to subscribe to the newsletter, register, log in, search for posts, search for posts by categories, search for posts by text, browse posts, search for authors and their posts. Additionally, logged in users can comment on posts and edit their profile, which is available for viewing by every website user. Through the Django panel, the admin can add new posts, add new authors, manage tags and users. All this is framed with nice graphics.
 
 # Dependencies and Usage
 
@@ -61,7 +61,7 @@ Installation:
 
 ![Register preview](/screenshots/Register1.png)
 
-register komunikat
+![Register preview](/screenshots/Register2.png)
 
 ![Register email preview](/screenshots/Mail2.png)
 
@@ -71,4 +71,4 @@ register komunikat
 
 ![Profile preview](/screenshots/Profile1.png)
 
-admin eee
+![Admin preview](/screenshots/Admin1.png)
